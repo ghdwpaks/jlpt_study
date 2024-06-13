@@ -146,6 +146,11 @@ if __name__ == "__main__":
     s = None
     if sector_number in ["1","2","3","4","5","6","7","8","9"] :
         s=eval(f's{sector_number}')
+    if len(sector_number) > 1 :
+        s = [] 
+        sector_numbers = list(sector_number)
+        for sector_number in sector_numbers :
+            s.extend(eval(f's{sector_number}'))
     elif sector_number == "out" :
         s=eval(f'out')
     #print("s :",s)
@@ -163,6 +168,7 @@ if __name__ == "__main__":
                 
             elif user_input == korean or convert_hanta_to_hangul(user_input) == korean:
                 print("")
+                pass
             else:
                 for i, row in enumerate(s):
                     if korean == row[1]:
