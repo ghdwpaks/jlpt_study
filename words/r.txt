@@ -1,0 +1,4 @@
+dk = date kanji = 일상한자
+part k = part kanji = 부수
+dkw = date kanji word = 일상 한자 단어
+dkw k = date kanji word k = 일상 한자 단어에 있는 한자들 ()

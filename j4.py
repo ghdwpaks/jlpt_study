@@ -1,7 +1,8 @@
-import random
+
 from getpass import getpass 
 import getpass
 import sys
+import re
 HIDE_CURSOR = '\033[?25l'
 SHOW_CURSOR = '\033[?25h'
 
@@ -137,45 +138,70 @@ s9 = [
 
 out = [
     ["ク","쿠"],["オ","오"],["ケ","케"],["サ","사"],["シ","시"],
-    ["タ","타"],["チ","치"],["ヌ","누"],["ツ","츠"],
+    ["タ","타"],["チ","치"],["ヌ","누"],["ツ","츠"],['マ', '마'],
+    ['ホ', '호'],['ヒ', '히'],['ノ', '노'],['フ', '후']
 
 ]
 if __name__ == "__main__":
+
+    # 숫자 구분하는 코드
+    def extract_numbers(text):
+        match = re.match(r'^out(\d+)$', text)
+        if match:
+            number_string = match.group(1)
+            return [int(char) for char in number_string]
+        return []
 
     sector_number = input("sector(1~9):")
     s = None
     if sector_number in ["1","2","3","4","5","6","7","8","9"] :
         s=eval(f's{sector_number}')
-    if len(sector_number) > 1 :
+
+    elif sector_number == "out" :
+        s=eval(f'out')
+
+    elif bool(re.match(r'^out\d+$', sector_number)) :
+        s = []
+        sectors = []
+        for i in extract_numbers(sector_number) :
+            if i in [1,2,3,4,5,6,7,8,9] :
+                eval(f'sectors.extend(s{i})')
+        sectors_keys = [k for k, v in sectors]
+        out_keys = [k for k, v in out]
+        for out_word in out:
+            for sector in sectors:
+                if sector[0] == out_word[0]:
+                    s.append(out_word)
+
+    elif len(sector_number) > 1 :
         s = [] 
         sector_numbers = list(sector_number)
         for sector_number in sector_numbers :
             s.extend(eval(f's{sector_number}'))
-    elif sector_number == "out" :
-        s=eval(f'out')
-    #print("s :",s)
+            
     sc = [0]*len(s)
-    while True:
-        random.shuffle(s)
-        for question in s:
-            japanese, korean = question
-            user_input = g(f"{japanese} ").strip()
-            if user_input == "exit" :
-                for i in range(len(s)):
-                    s[i].append(sc[i])
-                sorted_s = sorted(s, key=lambda x: x[2], reverse=True)
-                for i in sorted_s : print(i)
-                
-            elif user_input == korean or convert_hanta_to_hangul(user_input) == korean:
-                print("")
-                pass
-            else:
-                for i, row in enumerate(s):
-                    if korean == row[1]:
-                        sc[i] += 1
-                        break
+    if len(sc) > 0 : 
+        while True:
+            random.shuffle(s)
+            for question in s:
+                japanese, korean = question
+                user_input = g(f"{japanese} ").strip()
+                if user_input == "exit" :
+                    for i in range(len(s)):
+                        s[i].append(sc[i])
+                    sorted_s = sorted(s, key=lambda x: x[2], reverse=True)
+                    for i in sorted_s : print(i)
+                    exit()
+                elif user_input == korean or convert_hanta_to_hangul(user_input) == korean:
+                    print("")
+                    pass
+                else:
+                    for i, row in enumerate(s):
+                        if korean == row[1]:
+                            sc[i] += 1
+                            break
 
-                print(f"{korean}\n")  
+                    print(f"{korean}\n")  
 
 
 
