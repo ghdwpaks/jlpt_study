@@ -2,6 +2,7 @@ import customtkinter as ctk
 import webbrowser
 import csv
 import sys 
+import pyperclip
 
 # CSV 파일 읽기
 def read_and_process_csv(file_path):
@@ -41,8 +42,8 @@ ctk.set_default_color_theme("blue")  # 기본 색상 테마
 ]
 
 
-test_data = read_and_process_csv("C:\\t\\j\\words\\dkw1_k.csv")
 test_data = single_kanji_data
+test_data = read_and_process_csv("C:\\t\\j\\words\\dkw1_k.csv")
 
 for row in test_data:
     row['knows'] = 0
@@ -87,6 +88,7 @@ class FlashcardApp(ctk.CTk):
         self.bind("2", lambda event: self.search(2))
         self.bind("3", lambda event: self.search(3))
         self.bind("4", lambda event: self.search(4))
+        self.bind("q", lambda event: self.search(5))
 
         self.resizable(True, True)
 
@@ -127,7 +129,6 @@ class FlashcardApp(ctk.CTk):
 
     # '단어 화면' 구성
     def setup_word_frame(self):
-        kanji_font_size = 60
         self.word_label = ctk.CTkLabel(self.word_frame, text="", font=("Arial", kanji_font_size), text_color="white")
         self.word_label.place(relx=0.5, rely=0.5, anchor="center")
 
@@ -167,35 +168,30 @@ class FlashcardApp(ctk.CTk):
 
     # '모르겠어요' 버튼 동작
     def unknown_action(self, event=None):
-        print("entered unknown_action")
-        
-        print("모르겠어요 버튼 클릭됨!")
         self.next_card()
 
     # '알겠어요' 버튼 동작
     def known_action(self, event=None):
         current_kanji = test_data[self.current_index]
         current_kanji['knows'] += 1  # knows 값 증가
-        print("알겠어요 버튼 클릭됨!")
         self.next_card()
 
     # 다음 카드로 이동
     def next_card(self):
         # 현재 카드를 방문 처리
         self.visited[self.current_index] = True
-        print("self.visited :",self.visited)
-        print("self.remaining_data :",self.remaining_data)
         # 방문 여부 확인
         if all(self.visited):  # 모든 카드가 방문되었으면 종료
 
             self.remaining_data = [card for card in self.remaining_data if card['knows'] == 0]
 
-            print("filtered :",self.remaining_data)
-
             if not self.remaining_data:
-                print("모든 카드를 완전히 외웠습니다. 축하합니다!")
                 sys.exit()
             else:
+                print("시험을 다시 시작합니다.")
+                print("*"*88)
+                print(self.remaining_data)
+                print("*"*88)
                 self.restart_with_knows_zero()
 
 
@@ -214,7 +210,6 @@ class FlashcardApp(ctk.CTk):
 
         
     def search(self, target=None):
-        print("target :",target)
         if target == 1 : #부수
             target = self.p_label.cget("text")
             target = target.split("(")[0].strip() #(N획) 구문 제거
@@ -225,9 +220,14 @@ class FlashcardApp(ctk.CTk):
         elif target == 4 : #한국어 뜻
             target = self.km_label.cget("text")
 
-        url = f"https://ja.dict.naver.com/#/search?query={target}"
-        chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Chrome 경로
-        webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
+        if not target == 5 :
+            url = f"https://ja.dict.naver.com/#/search?query={target}"
+            chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Chrome 경로
+            webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
+        else : 
+            target = self.word_label.cget("text")
+            pyperclip.copy(f"{target}가 어떤 한자로 이루어져있는지 알려줘.")
+        
 
         
 
