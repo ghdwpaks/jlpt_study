@@ -1,3 +1,11 @@
+#1 : 네이버 일본어 사전에서 부수 검색
+#2 : 네이버 일본어 사전에서 음독 검색
+#3 : 네이버 일본어 사전에서 훈독 검색
+#4 : 네이버 일본어 사전에서 한국어 뜻 검색
+#Q : GPT 한테 할 질문 복사
+#E : 현재 보고있는 한자 복사
+#; : 시험종료 및 결과(를 CMD 창에)출력
+
 import customtkinter as ctk
 import webbrowser
 import csv
@@ -46,7 +54,8 @@ test_data = single_kanji_data
 test_data = read_and_process_csv("C:\\t\\j\\words\\dkw1_k.csv")
 
 for row in test_data:
-    row['knows'] = 0
+    if not "knows" in row.keys() :
+        row['knows'] = 0
 
 class FlashcardApp(ctk.CTk):
     def __init__(self):
@@ -88,9 +97,102 @@ class FlashcardApp(ctk.CTk):
         self.bind("2", lambda event: self.search(2))
         self.bind("3", lambda event: self.search(3))
         self.bind("4", lambda event: self.search(4))
-        self.bind("q", lambda event: self.search(5))
+        self.bind("q", lambda event: self.search(11))
+        self.bind("e", lambda event: self.search(12))
+        self.bind(";", lambda event: self.search(13))
 
         self.resizable(True, True)
+
+        self.num_parts = 1  # 분할 개수
+        self.current_part = 1  # 현재 선택된 부분
+
+
+        # 진행 바 추가
+        self.progress_bar = ctk.CTkProgressBar(self, width=300)
+        self.progress_bar.pack(pady=10)
+        self.progress_bar.set(0)  # 초기 진행률: 0%
+
+        # 초기 화면 구성
+        self.show_initial_screen()
+
+        #self.focus_set()
+
+    def update_progress_bar(self):
+        """진행 바 업데이트"""
+        progress = (self.current_index + 1) / len(self.remaining_data)  # 진행률 계산
+        self.progress_bar.set(progress)  # 진행률 업데이트
+
+    def show_initial_screen(self):
+        """시험 설정 화면 표시"""
+        # 설명 텍스트
+        self.title_label = ctk.CTkLabel(self, text="시험 설정", font=("맑은 고딕", 20))
+        self.title_label.pack(pady=10)
+
+        self.info_label = ctk.CTkLabel(self, text=f"총 단어 수: {len(self.remaining_data)}", font=("맑은 고딕", 14))
+        self.info_label.pack()
+
+        # 등분 설정
+        self.num_parts_label = ctk.CTkLabel(self, text=f"등분: {self.num_parts}", font=("맑은 고딕", 14))
+        self.num_parts_label.pack(pady=5)
+
+        self.num_parts_minus = ctk.CTkButton(self, text="-", command=lambda: self.update_num_parts(-1), width=50)
+        self.num_parts_minus.pack(side="left", padx=5)
+
+        self.num_parts_plus = ctk.CTkButton(self, text="+", command=lambda: self.update_num_parts(1), width=50)
+        self.num_parts_plus.pack(side="left", padx=5)
+
+        # 파트 선택
+        self.current_part_label = ctk.CTkLabel(self, text=f"파트: {self.current_part}", font=("맑은 고딕", 14))
+        self.current_part_label.pack(pady=5)
+
+        self.current_part_minus = ctk.CTkButton(self, text="-", command=lambda: self.update_current_part(-1), width=50)
+        self.current_part_minus.pack(side="left", padx=5)
+
+        self.current_part_plus = ctk.CTkButton(self, text="+", command=lambda: self.update_current_part(1), width=50)
+        self.current_part_plus.pack(side="left", padx=5)
+
+        # 설정 완료 버튼
+        self.start_button = ctk.CTkButton(self, text="시작하기", command=self.start_exam)
+        self.start_button.pack(pady=20)
+
+    def update_num_parts(self, change):
+        """등분 값 업데이트"""
+        max_parts = len(self.remaining_data)
+        self.num_parts = max(1, min(self.num_parts + change, max_parts))  # 1 이상, 데이터 길이 이하
+        self.num_parts_label.configure(text=f"등분: {self.num_parts}")
+
+    def update_current_part(self, change):
+        """현재 파트 값 업데이트"""
+        self.current_part = max(1, min(self.current_part + change, self.num_parts))  # 1 이상, 등분 값 이하
+        self.current_part_label.configure(text=f"파트: {self.current_part}")
+
+    def start_exam(self):
+        """시험 데이터 설정 및 시작"""
+        # 선택된 데이터를 분할
+        total = len(self.remaining_data)
+        chunk_size = total // self.num_parts
+        start_idx = (self.current_part - 1) * chunk_size
+        end_idx = start_idx + chunk_size
+
+        self.remaining_data = self.remaining_data[start_idx:end_idx]
+        
+        self.visited = [False] * len(self.remaining_data)  # 방문 여부를 추적하는 리스트
+
+        # 설정 완료 후 기존 시험 로직으로 넘어가기
+
+        self.destroy_initial_screen()
+
+    def destroy_initial_screen(self):
+        """초기 설정 화면 삭제"""
+        self.title_label.destroy()
+        self.info_label.destroy()
+        self.num_parts_label.destroy()
+        self.num_parts_minus.destroy()
+        self.num_parts_plus.destroy()
+        self.current_part_label.destroy()
+        self.current_part_minus.destroy()
+        self.current_part_plus.destroy()
+        self.start_button.destroy()
 
         self.focus_set()
 
@@ -172,18 +274,27 @@ class FlashcardApp(ctk.CTk):
 
     # '알겠어요' 버튼 동작
     def known_action(self, event=None):
-        current_kanji = test_data[self.current_index]
-        current_kanji['knows'] += 1  # knows 값 증가
+        current_kanji = self.remaining_data[self.current_index]
+        if type(current_kanji['knows']) == type(int()) :
+            current_kanji['knows'] += 1  # knows 값 증가
+        else : 
+            current_kanji['knows'] = True  # knows 값 증가
         self.next_card()
 
     # 다음 카드로 이동
-    def next_card(self):
+    def next_card(self,selected_end=False):
         # 현재 카드를 방문 처리
         self.visited[self.current_index] = True
         # 방문 여부 확인
-        if all(self.visited):  # 모든 카드가 방문되었으면 종료
+        if all(self.visited) or selected_end:  # 모든 카드가 방문되었으면 종료
+            self.progress_bar.set(1)  # 진행률 100%
+            temp_data = []
+            for word in self.remaining_data :
+                if word['knows'] in [0,False] :
+                    temp_data.append(word)
+            self.remaining_data = temp_data
+            self.remaining_data = [card for card in self.remaining_data if card['knows'] in [0,False]]
 
-            self.remaining_data = [card for card in self.remaining_data if card['knows'] == 0]
 
             if not self.remaining_data:
                 sys.exit()
@@ -195,6 +306,7 @@ class FlashcardApp(ctk.CTk):
                 self.restart_with_knows_zero()
 
 
+        self.update_progress_bar()  # 진행 바 업데이트
         # 다음 카드로 이동
         self.current_index = (self.current_index + 1) % len(self.remaining_data)
         if self.is_meaning_screen:
@@ -220,16 +332,20 @@ class FlashcardApp(ctk.CTk):
         elif target == 4 : #한국어 뜻
             target = self.km_label.cget("text")
 
-        if not target == 5 :
+        if not target in [11,12,13] :
             url = f"https://ja.dict.naver.com/#/search?query={target}"
             chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Chrome 경로
             webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
         else : 
-            target = self.word_label.cget("text")
-            pyperclip.copy(f"{target}가 어떤 한자로 이루어져있는지 알려줘.")
-        
+            if target == 11 : 
+                target = self.word_label.cget("text")
+                pyperclip.copy(f"{target}가 어떤 부속 한자로 이루어져있는지 알려줘. 부속 한자의 뜻, 역할, 암시, 그리고 이 부속한자들의 전체적인 의미에 대해서 알려줘.")
+            elif target == 12 : 
+                target = self.word_label.cget("text")
+                pyperclip.copy(f"{target}")
+            elif target == 13 :
+                self.next_card(selected_end=True)
 
-        
 
     def on_key_press(self, event=None):
         """사용자가 아무 키나 입력했을 때 다음 진행"""
@@ -251,4 +367,5 @@ class FlashcardApp(ctk.CTk):
 if __name__ == "__main__":
     app = FlashcardApp()
     app.mainloop()
+
 
