@@ -19,12 +19,21 @@ def read_and_process_csv(file_path):
         processed_data = []
         for row in reader:
             # 필드 이름 변경
-            row['p'] = row.pop('E')
             row['k'] = row.pop('T')  # 'T' -> 'k'
             row['km'] = row.pop('D')  # 'D' -> 'km'
-            p_split = row.pop('P').split('/')  # 'P'를 'E'로 나누어 처리
-            row['s'] = p_split[0] if len(p_split) > 0 else ""  # 'p'로 첫 번째 값 저장
-            row['m'] = p_split[1] if len(p_split) > 1 else ""  # 'm'로 두 번째 값 저장
+            if 'E' in row.keys() : 
+                row['p'] = row.pop('E')
+            else :
+                row['p'] = ""
+
+            if "/" in row['P'] :
+                p_split = row.pop('P').split('/')  # 'P'를 'E'로 나누어 처리
+                row['s'] = p_split[0] if len(p_split) > 0 else ""  # 'p'로 첫 번째 값 저장
+                row['m'] = p_split[1] if len(p_split) > 1 else ""  # 'm'로 두 번째 값 저장
+            else :
+                row['s'] = row.pop('P')
+                row['m'] = ""
+
             processed_data.append(row)
     return processed_data
 
@@ -32,26 +41,16 @@ def read_and_process_csv(file_path):
 kanji_font_size = 120
 
 # 단일한자데이터시트 예시
-single_kanji_data = [
-    {'k': '兵', 's': 'へい·ひょう', 'm': '', 'p': '八 (2획)', 'km': '병(사)'},
-    {'k': '続', 's': 'ぞく', 'm': 'つづく·つづける', 'p': '糸 (6획)', 'km': '(계)속'},
-]
+single_kanji_data = [{'p': ' 扌 (3획)', 'k': '摂', 'km': '섭(취)', 's': 'せつ', 'm': '', 'knows': 0}, {'p': '言 (7획)', 'k': '語', 'km': '( 언)어', 's': 'ご', 'm': 'かたらう·かたる', 'knows': 0}, {'p': '氵 (3획)', 'k': '漢', 'km': '한(자)', 's': 'かん', 'm': '', 'knows': 0}, {'p': '一 (1획)', 'k': '丈', 'km': '(신)장', 's': 'じょう', 'm': 'たけ', 'knows': 0}, {'p': '日 (4획)', 'k': '最', 'km': '최(초, 최강)', 's': 'さい', 'm': 'もっとも', 'knows': 0}, {'p': '石 (5획)', 'k': '確', 'km': '확(신)', 's': 'かく', 'm': 'たしか·たしかめる', 'knows': 0}, {'p': '宀 (3획)', 'k': '定', 'km': '(결)정', 's': 'じょう·てい', 'm': 'さだまる·さだめる·さだか', 'knows': 0}, {'p': '大 (3획)', 'k': '夫', 'km': '부(부)', 's': 'ふ·ふう', 'm': 'おっと', 'knows': 0}, {'p': '土 (3획)', 'k': '地', 'km': '지(면)', 's': 'じ·ち', 'm': '', 'knows': 0}, {'p': '八 (2획)', 'k': '兵', 'km': '병(사)', 's': 'へい·ひょう', 'm': '', 'knows': 0}]
+
+
+test_data = single_kanji_data
+test_data = read_and_process_csv("C:\\t\\j\\words\\dkw1.csv")
 
 # CustomTkinter 테마 설정
 ctk.set_appearance_mode("dark")  # 다크 모드
 ctk.set_default_color_theme("blue")  # 기본 색상 테마
 
-
-['T', 'D', 'P']
-
-[
-{'T':'急', 'D':'급하다', 'P':'きゅう/いそぐ'},
-{'T':'静', 'D':'조용하다', 'P':'せい·じょう/しず·しずか·しずまる·しずめる'},
-]
-
-
-test_data = single_kanji_data
-test_data = read_and_process_csv("C:\\t\\j\\words\\dkw1_k.csv")
 
 for row in test_data:
     if not "knows" in row.keys() :
