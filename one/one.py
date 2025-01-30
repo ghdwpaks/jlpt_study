@@ -1,9 +1,26 @@
+#Caps Lock 주의!!!
+
 #1 : 네이버 일본어 사전에서 부수 검색
 #2 : 네이버 일본어 사전에서 음독 검색
 #3 : 네이버 일본어 사전에서 훈독 검색
 #4 : 네이버 일본어 사전에서 한국어 뜻 검색
 #Q : GPT 한테 할 질문 복사
 #E : 현재 보고있는 한자 복사
+
+#(복수한자단어시험의 경우)
+#현재 단어의 
+#z : 1번째 한자 검색
+#x : 2번째 한자 검색
+#c : 3번째 한자 검색
+
+#Shift + z : 1번째 한자 복사
+#Shift + x : 2번째 한자 복사
+#Shift + c : 3번째 한자 복사
+
+#Ctrl + z : 1번째 한자를 GPT에게 질문하는 글 복사
+#Ctrl + x : 2번째 한자를 GPT에게 질문하는 글 복사
+#Ctrl + c : 3번째 한자를 GPT에게 질문하는 글 복사
+
 #; : 시험종료 및 결과(를 CMD 창에)출력
 
 import customtkinter as ctk
@@ -11,6 +28,7 @@ import webbrowser
 import csv
 import sys 
 import pyperclip
+import ctypes
 
 # CSV 파일 읽기
 def read_and_process_csv(file_path):
@@ -38,10 +56,10 @@ def read_and_process_csv(file_path):
     return processed_data
 
 
-kanji_font_size = 120
+kanji_font_size = 240
 
 # 단일한자데이터시트 예시
-single_kanji_data = [{'p': ' 扌 (3획)', 'k': '摂', 'km': '섭(취)', 's': 'せつ', 'm': '', 'knows': 0}, {'p': '言 (7획)', 'k': '語', 'km': '( 언)어', 's': 'ご', 'm': 'かたらう·かたる', 'knows': 0}, {'p': '氵 (3획)', 'k': '漢', 'km': '한(자)', 's': 'かん', 'm': '', 'knows': 0}, {'p': '一 (1획)', 'k': '丈', 'km': '(신)장', 's': 'じょう', 'm': 'たけ', 'knows': 0}, {'p': '日 (4획)', 'k': '最', 'km': '최(초, 최강)', 's': 'さい', 'm': 'もっとも', 'knows': 0}, {'p': '石 (5획)', 'k': '確', 'km': '확(신)', 's': 'かく', 'm': 'たしか·たしかめる', 'knows': 0}, {'p': '宀 (3획)', 'k': '定', 'km': '(결)정', 's': 'じょう·てい', 'm': 'さだまる·さだめる·さだか', 'knows': 0}, {'p': '大 (3획)', 'k': '夫', 'km': '부(부)', 's': 'ふ·ふう', 'm': 'おっと', 'knows': 0}, {'p': '土 (3획)', 'k': '地', 'km': '지(면)', 's': 'じ·ち', 'm': '', 'knows': 0}, {'p': '八 (2획)', 'k': '兵', 'km': '병(사)', 's': 'へい·ひょう', 'm': '', 'knows': 0}]
+single_kanji_data = [{'k': '説', 'km': '설(명)', 'p': '言 (7획)', 's': 'せつ·ぜい', 'm': 'とく', 'knows': 0}, {'k': '差', 'km': '차(이)', 'p': '工 (3획)', 's': 'さ', 'm': 'さす', 'knows': 0}, {'k': '写', 'km': '사(본) (베끼다)', 'p': '冖 (2획)', 's': 'しゃ', 'm': 'うつす·うつる', 'knows': 0}, {'k': '適', 'km': '적(합)', 'p': '辶 (3획)', 's': 'てき', 'm': '', 'knows': 0}, {'k': '備', 'km': '(준)비(하다)', 'p': '亻 (2획)', 's': 'び', 'm': 'そなえる·そなわる', 'knows': 0}, {'k': '険', 'km': '(위)험(하다)', 'p': '阝左 (3획)', 's': 'けん', 'm': 'けわしい', 'knows': 0}, {'k': '相', 'km': '상(대)', 'p': '目 (5획)', 's': 'そう·しょう', 'm': 'あい', 'knows': 0}, {'k': '週', 'km': '(일)주(일)', 'p': '辶 (3획)', 's': 'しゅう', 'm': '', 'knows': 0}, {'k': '情', 'km': '(감)정', 'p': '忄 (3획)', 's': 'じ ょう·せい', 'm': 'なさけ', 'knows': 0}, {'k': '価', 'km': '가(치)', 'p': '亻 (2획)', 's': 'か', 'm': 'あたい', 'knows': 0}, {'k': '後', 'km': '후(회)', 'p': '彳 (3획)', 's': 'ご·こう', 'm': 'あと·うしろ·のち·おくれる', 'knows': 0}, {'k': '病', 'km': '병(명)', 'p': '疒 (5획)', 's': 'びょう·へい', 'm': 'やまい·やむ', 'knows': 0}, {'k': '関', 'km': '관(계)', 'p': '門 (8획)', 's': 'かん', 'm': 'かかわる·せき', 'knows': 0}, {'k': '頑', 'km': '완(고)', 'p': '頁 (9획)', 's': 'がん', 'm': '', 'knows': 0}, {'k': '係', 'km': '계(원)', 'p': ' 亻 (2획)', 's': 'けい', 'm': 'かかり·かかる', 'knows': 0}, {'k': '事', 'km': '사(실)', 'p': '亅 (1획)', 's': 'じ·ず', 'm': 'こと', 'knows': 0}, {'k': '宿', 'km': '숙(박하다)', 'p': '宀 (3획)', 's': 'しゅく', 'm': 'やど·やどす·やどる', 'knows': 0}, {'k': '張', 'km': '(주)장 / 뻗어나다', 'p': '弓 (3획)', 's': 'ちょう', 'm': 'はる', 'knows': 0}, {'k': '勢', 'km': '세(력)', 'p': '力 (2획)', 's': 'せい', 'm': 'いきおい', 'knows': 0}, {'k': '摂', 'km': '섭(취)', 'p': ' 扌 (3획)', 's': 'せつ', 'm': '', 'knows': 0}, {'k': '語', 'km': '(언)어', 'p': '言 (7획)', 's': 'ご', 'm': 'かたらう·かたる', 'knows': 0}, {'k': '確', 'km': '확(신)', 'p': '石 (5획)', 's': 'かく', 'm': 'たしか·たしかめる', 'knows': 0}, {'k': '定', 'km': '(결)정', 'p': '宀 (3획)', 's': 'じょう·てい', 'm': 'さだまる·さだめる·さだか', 'knows': 0}]
 
 
 test_data = single_kanji_data
@@ -60,6 +78,7 @@ class FlashcardApp(ctk.CTk):
     def __init__(self):
         
         super().__init__()
+        self.disable_capslock()
         self.title("플래시카드 - 뜻 화면과 단어 화면 전환")
         self.geometry("400x500")
         self.resizable(False, False)
@@ -87,18 +106,56 @@ class FlashcardApp(ctk.CTk):
         self.bind("<Left>", self.unknown_action)  # 왼쪽 방향키로 '모르겠어요'
         self.bind("<Right>", self.known_action)  # 오른쪽 방향키로 '알겠어요'
 
-        self.bind("w", self.toggle_screen)  # 화살표 위쪽 키로 화면 전환
+        self.bind("w", self.toggle_screen);self.bind("W", self.toggle_screen) # 화살표 위쪽 키로 화면 전환
+        
 
-        self.bind("a", self.unknown_action)  # 'a' 키 입력으로 '모르겠어요'
-        self.bind("d", self.known_action)  # 'd' 키 입력으로 '알겠어요'
+        self.bind("a", self.unknown_action);self.bind("A", self.unknown_action) # 'a' 키 입력으로 '모르겠어요'
+        self.bind("d", self.known_action);self.bind("D", self.known_action) # 'd' 키 입력으로 '알겠어요'
+        
         
         self.bind("1", lambda event: self.search(1))
         self.bind("2", lambda event: self.search(2))
         self.bind("3", lambda event: self.search(3))
         self.bind("4", lambda event: self.search(4))
-        self.bind("q", lambda event: self.search(11))
-        self.bind("e", lambda event: self.search(12))
+        self.bind("q", lambda event: self.search(11));self.bind("Q", lambda event: self.search(11))
+        self.bind("e", lambda event: self.search(12));self.bind("E", lambda event: self.search(12))
         self.bind(";", lambda event: self.search(13))
+
+
+        word = self.remaining_data[self.current_index]['k']
+        keys = ["z", "x", "c"]  # 할당할 키 목록
+
+        #여러개의 한자를 시험볼 경우의 1,2,3 번째 한자 검색
+        for i, key in enumerate(keys):
+            if len(word) > i:
+                self.bind(key, lambda event, w=word[i]: self.search(target=1,word=w)) #소문자 입력 감지
+                self.bind(key.upper(), lambda event, w=word[i]: self.search(target=1,word=w)) #대문자 입력 감지
+
+        #여러개의 한자를 시험볼 경우의 1,2,3 번째 한자 복사
+        for i, key in enumerate(keys):
+            if len(word) > i:
+                self.bind(f"<Shift-{key}>", lambda event, w=word[i]: self.search(target=2,word=w)) #소문자 입력 감지
+                self.bind(f"<Shift-{key.upper()}>", lambda event, w=word[i]: self.search(target=2,word=w)) #대문자 입력 감지
+
+        #여러개의 한자를 시험볼 경우의 1,2,3 번째 한자에 대한 GPT 질문글 복사
+        for i, key in enumerate(keys):
+            if len(word) > i:
+                self.bind(f"<Control-{key}>", lambda event, w=word[i]: self.search(target=3,word=w)) #소문자 입력 감지
+                self.bind(f"<Control-{key.upper()}>", lambda event, w=word[i]: self.search(target=3,word=w)) #대문자 입력 감지
+        
+        #여러개의 한자를 시험볼 경우의 1,2,3 번째 한자
+        #z : 검색
+        #x : 복사
+        #c : 에 대한 GPT 질문글 복사
+        word = self.remaining_data[self.current_index]['k']
+        keys = ["z", "x", "c"]
+        modifiers = [("", 1), ("<Shift-", 2), ("<Control-", 3)]  # (키 접두어, target 값)
+
+        for i, key in enumerate(keys):
+            if len(word) > i:
+                for mod, target in modifiers:
+                    self.bind(f"{mod}{key}>", lambda event, w=word[i], t=target: self.search(target=t, word=w))
+                    self.bind(f"{mod}{key.upper()}>", lambda event, w=word[i], t=target: self.search(target=t, word=w))
 
         self.resizable(True, True)
 
@@ -224,7 +281,7 @@ class FlashcardApp(ctk.CTk):
 
         # 초록색 버튼 (알겠어요)
         self.known_button = ctk.CTkButton(self.meaning_frame, text="알겠어요", fg_color="darkgreen", hover_color="green",
-                                          command=self.known_action)
+                                          command=self.known_action) 
         self.known_button.pack(side="right", padx=10, pady=10, expand=True)
 
 
@@ -320,30 +377,42 @@ class FlashcardApp(ctk.CTk):
         webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
 
         
-    def search(self, target=None):
-        if target == 1 : #부수
-            target = self.p_label.cget("text")
-            target = target.split("(")[0].strip() #(N획) 구문 제거
-        elif target == 2 : #음독
-            target = self.s_label.cget("text")
-        elif target == 3 : #훈독
-            target = self.m_label.cget("text")
-        elif target == 4 : #한국어 뜻
-            target = self.km_label.cget("text")
+    def search(self, target=None, word=None):
+        #target 은 숫자, word 는 (들어온다면) 한자 정보 인입
+        if word : 
+            #복수한자를 시험보는 경우
+            if target == 1 : #검색
+                self.naver_dictionary_open(target=word)
+            if target == 2 : #복사
+                pyperclip.copy(f"{word}")
+            if target == 3 : #GPT 질문 복사
+                pyperclip.copy(f"{word}가 어떤 부속 한자로 이루어져있는지 알려줘. 부속 한자의 뜻, 역할, 암시, 그리고 이 부속한자들의 전체적인 의미에 대해서 알려줘.")
 
-        if not target in [11,12,13] :
-            url = f"https://ja.dict.naver.com/#/search?query={target}"
-            chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Chrome 경로
-            webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
         else : 
-            if target == 11 : 
-                target = self.word_label.cget("text")
-                pyperclip.copy(f"{target}가 어떤 부속 한자로 이루어져있는지 알려줘. 부속 한자의 뜻, 역할, 암시, 그리고 이 부속한자들의 전체적인 의미에 대해서 알려줘.")
-            elif target == 12 : 
-                target = self.word_label.cget("text")
-                pyperclip.copy(f"{target}")
-            elif target == 13 :
-                self.next_card(selected_end=True)
+            #단일한자를 시험보는경우
+            if target == 1 : #부수
+                target = self.p_label.cget("text")
+                target = target.split("(")[0].strip() #(N획) 구문 제거
+            elif target == 2 : #음독
+                target = self.s_label.cget("text")
+            elif target == 3 : #훈독
+                target = self.m_label.cget("text")
+            elif target == 4 : #한국어 뜻
+                target = self.km_label.cget("text")
+
+            if not target in [11,12,13] :
+                url = f"https://ja.dict.naver.com/#/search?query={target}"
+                chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Chrome 경로
+                webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
+            else : 
+                if target == 11 : 
+                    target = self.word_label.cget("text")
+                    pyperclip.copy(f"{target}가 어떤 부속 한자로 이루어져있는지 알려줘. 부속 한자의 뜻, 역할, 암시, 그리고 이 부속한자들의 전체적인 의미에 대해서 알려줘.")
+                elif target == 12 : 
+                    target = self.word_label.cget("text")
+                    pyperclip.copy(f"{target}")
+                elif target == 13 :
+                    self.next_card(selected_end=True)
 
 
     def on_key_press(self, event=None):
@@ -362,6 +431,18 @@ class FlashcardApp(ctk.CTk):
 
         self.update_meaning_screen()
 
+    def disable_capslock(self=None):
+        """Caps Lock을 강제로 해제"""
+        caps_state = ctypes.windll.user32.GetKeyState(0x14)  # Caps Lock 키 상태 확인
+        if caps_state == 1:  # Caps Lock이 활성화되어 있으면
+            ctypes.windll.user32.keybd_event(0x14, 0, 0, 0)  # Caps Lock 키 누름
+            ctypes.windll.user32.keybd_event(0x14, 0, 2, 0)  # Caps Lock 키 뗌
+            
+    def naver_dictionary_open(self=None, target="") :
+        url = f"https://ja.dict.naver.com/#/search?query={target}"
+        chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Chrome 경로
+        webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
+        
 # 앱 실행
 if __name__ == "__main__":
     app = FlashcardApp()
