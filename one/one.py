@@ -123,39 +123,38 @@ class FlashcardApp(ctk.CTk):
 
 
         word = self.remaining_data[self.current_index]['k']
-        keys = ["z", "x", "c"]  # 할당할 키 목록
+        self.search_keys = ["z", "x", "c"]  # 할당할 키 목록
 
         #여러개의 한자를 시험볼 경우의 1,2,3 번째 한자 검색
-        for i, key in enumerate(keys):
+        for i, key in enumerate(self.search_keys):
             if len(word) > i:
-                self.bind(key, lambda event, w=word[i]: self.search(target=1,word=w)) #소문자 입력 감지
-                self.bind(key.upper(), lambda event, w=word[i]: self.search(target=1,word=w)) #대문자 입력 감지
+                self.bind(key, lambda event, w=key: self.search(target=1,word=w)) #소문자 입력 감지
+                self.bind(key.upper(), lambda event, w=key: self.search(target=1,word=w)) #대문자 입력 감지
 
         #여러개의 한자를 시험볼 경우의 1,2,3 번째 한자 복사
-        for i, key in enumerate(keys):
+        for i, key in enumerate(self.search_keys):
             if len(word) > i:
-                self.bind(f"<Shift-{key}>", lambda event, w=word[i]: self.search(target=2,word=w)) #소문자 입력 감지
-                self.bind(f"<Shift-{key.upper()}>", lambda event, w=word[i]: self.search(target=2,word=w)) #대문자 입력 감지
+                self.bind(f"<Shift-{key}>", lambda event, w=key: self.search(target=2,word=w)) #소문자 입력 감지
+                self.bind(f"<Shift-{key.upper()}>", lambda event, w=key: self.search(target=2,word=w)) #대문자 입력 감지
 
         #여러개의 한자를 시험볼 경우의 1,2,3 번째 한자에 대한 GPT 질문글 복사
-        for i, key in enumerate(keys):
+        for i, key in enumerate(self.search_keys):
             if len(word) > i:
-                self.bind(f"<Control-{key}>", lambda event, w=word[i]: self.search(target=3,word=w)) #소문자 입력 감지
-                self.bind(f"<Control-{key.upper()}>", lambda event, w=word[i]: self.search(target=3,word=w)) #대문자 입력 감지
+                self.bind(f"<Control-{key}>", lambda event, w=key: self.search(target=3,word=w)) #소문자 입력 감지
+                self.bind(f"<Control-{key.upper()}>", lambda event, w=key: self.search(target=3,word=w)) #대문자 입력 감지
         
         #여러개의 한자를 시험볼 경우의 1,2,3 번째 한자
         #z : 검색
         #x : 복사
         #c : 에 대한 GPT 질문글 복사
         word = self.remaining_data[self.current_index]['k']
-        keys = ["z", "x", "c"]
         modifiers = [("", 1), ("<Shift-", 2), ("<Control-", 3)]  # (키 접두어, target 값)
 
-        for i, key in enumerate(keys):
+        for i, key in enumerate(self.search_keys):
             if len(word) > i:
                 for mod, target in modifiers:
-                    self.bind(f"{mod}{key}>", lambda event, w=word[i], t=target: self.search(target=t, word=w))
-                    self.bind(f"{mod}{key.upper()}>", lambda event, w=word[i], t=target: self.search(target=t, word=w))
+                    self.bind(f"{mod}{key}>", lambda event, w=key, t=target: self.search(target=t, word=w))
+                    self.bind(f"{mod}{key.upper()}>", lambda event, w=key, t=target: self.search(target=t, word=w))
 
         self.resizable(True, True)
 
@@ -382,11 +381,14 @@ class FlashcardApp(ctk.CTk):
         if word : 
             #복수한자를 시험보는 경우
             if target == 1 : #검색
-                self.naver_dictionary_open(target=word)
+                target = self.word_label.cget("text")[self.search_keys.index(word)]
+                self.naver_dictionary_open(target=target)
             if target == 2 : #복사
-                pyperclip.copy(f"{word}")
+                target = self.word_label.cget("text")[self.search_keys.index(word)]
+                pyperclip.copy(f"{target}")
             if target == 3 : #GPT 질문 복사
-                pyperclip.copy(f"{word}가 어떤 부속 한자로 이루어져있는지 알려줘. 부속 한자의 뜻, 역할, 암시, 그리고 이 부속한자들의 전체적인 의미에 대해서 알려줘.")
+                target = self.word_label.cget("text")[self.search_keys.index(word)]
+                pyperclip.copy(f"{target}가 어떤 부속 한자로 이루어져있는지 알려줘. 부속 한자의 뜻, 역할, 암시, 그리고 이 부속한자들의 전체적인 의미에 대해서 알려줘.")
 
         else : 
             #단일한자를 시험보는경우
