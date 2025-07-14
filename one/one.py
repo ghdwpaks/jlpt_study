@@ -32,6 +32,9 @@ import ctypes
 import requests
 from bs4 import BeautifulSoup
 import webbrowser
+import tempfile
+import os
+import subprocess
 
 # CSV 파일 읽기
 def read_and_process_csv(file_path):
@@ -181,6 +184,26 @@ class FlashcardApp(ctk.CTk):
 
         #self.focus_set()
 
+    def extract_kousei_parts(self, detail_url: str):
+        """
+        상세페이지에서, <span class="separator2">가 있는 <li>만,
+        해당 li의 출력 텍스트(예: '广＋心')를 리스트에 담아 반환
+        """
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        }
+        res = requests.get(detail_url, headers=headers)
+        res.raise_for_status()
+        soup = BeautifulSoup(res.text, "html.parser")
+
+        result = []
+        # 모든 <li> 검사
+        for li in soup.find_all("li"):
+            # li 안에 <span class="separator2">가 있으면
+            if li.find("span", class_="separator2"):
+                text = li.get_text(strip=True)
+                result.append(f"{text} = ")
+        return result
 
     def open_kanji_detail_by_unicoded_word(self, unicoded_word: str):
         """
@@ -195,13 +218,14 @@ class FlashcardApp(ctk.CTk):
         response.raise_for_status()  # 요청 실패시 예외 발생
 
         soup = BeautifulSoup(response.text, "html.parser")
-
+        return_url = None
         # 모든 <a> 태그 중 class에 ajax, color1 둘 다 포함된 첫번째 태그 찾기
         for a in soup.find_all("a"):
             class_list = a.get("class", [])
             if "ajax" in class_list and "color1" in class_list:
-                webbrowser.open(f"{a.get("href")}#m_kousei")
-                return
+                return_url = f"{a.get("href")}#m_kousei"
+                webbrowser.open(return_url)
+                return return_url
         print("class에 'ajax'와 'color1'이 모두 포함된 <a> 태그를 찾을 수 없습니다.")
 
 
@@ -424,7 +448,12 @@ class FlashcardApp(ctk.CTk):
                 pyperclip.copy(f"{target}가 어떤 부속 한자로 이루어져있는지 알려줘. 부속 한자의 뜻, 역할, 암시, 그리고 이 부속한자들의 전체적인 의미에 대해서 알려줘.")
             if target == 4 : 
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
-                self.open_kanji_detail_by_unicoded_word(f"{format(ord(target), '04X')}")
+                url = self.open_kanji_detail_by_unicoded_word(f"{format(ord(target), '04X')}")
+
+                parts = self.extract_kousei_parts(url)
+                for part_idx in range(len(parts)):
+                    parts[part_idx] = f"{parts[part_idx]}{target}"
+                self.open_txt_on_vscode(parts)
 
         else : 
             #단일한자를 시험보는경우
@@ -452,7 +481,18 @@ class FlashcardApp(ctk.CTk):
                 elif target == 13 :
                     self.next_card(selected_end=True)
 
+    def open_txt_on_vscode(self, strings):
+        # 임시 txt 파일 생성
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt', encoding='utf-8') as tmp:
+            tmp.write('\n'.join(strings))
+            tmp_filename = tmp.name
 
+        # VSCode에서 파일 열기
+        if sys.platform.startswith("win"):
+            subprocess.Popen(['code', tmp_filename], shell=True)
+        else:
+            subprocess.Popen(['code', tmp_filename])
+            
     def on_key_press(self, event=None):
         """사용자가 아무 키나 입력했을 때 다음 진행"""
         self.end_label.pack_forget()  # 뜻 화면 숨기기
