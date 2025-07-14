@@ -29,6 +29,9 @@ import csv
 import sys 
 import pyperclip
 import ctypes
+import requests
+from bs4 import BeautifulSoup
+import webbrowser
 
 # CSV 파일 읽기
 def read_and_process_csv(file_path):
@@ -63,7 +66,7 @@ single_kanji_data = [{'k': '説', 'km': '설(명)', 'p': '言 (7획)', 's': 'せ
 
 
 test_data = single_kanji_data
-test_data = read_and_process_csv("C:\\t\\j\\words\\dkw1.csv")
+test_data = read_and_process_csv("C:\\t\\ghdwpaks\\words\\dkw1_k1.csv")
 
 # CustomTkinter 테마 설정
 ctk.set_appearance_mode("dark")  # 다크 모드
@@ -142,6 +145,12 @@ class FlashcardApp(ctk.CTk):
             if len(word) > i:
                 self.bind(f"<Control-{key}>", lambda event, w=key: self.search(target=3,word=w)) #소문자 입력 감지
                 self.bind(f"<Control-{key.upper()}>", lambda event, w=key: self.search(target=3,word=w)) #대문자 입력 감지
+
+        #여러개의 한자를 시험볼 경우의 1,2,3 번째 한자 복사
+        for i, key in enumerate(self.search_keys):
+            if len(word) > i:
+                self.bind(f"<Alt-{key}>", lambda event, w=key: self.search(target=4,word=w)) #소문자 입력 감지
+                self.bind(f"<Alt-{key.upper()}>", lambda event, w=key: self.search(target=4,word=w)) #대문자 입력 감지
         
         #여러개의 한자를 시험볼 경우의 1,2,3 번째 한자
         #z : 검색
@@ -171,6 +180,30 @@ class FlashcardApp(ctk.CTk):
         self.show_initial_screen()
 
         #self.focus_set()
+
+
+    def open_kanji_detail_by_unicoded_word(self, unicoded_word: str):
+        """
+        지정한 유니코드 한자(16진수)에 대한 jitenon 검색 결과 페이지에서
+        class에 'ajax'와 'color1'이 모두 포함된 첫번째 <a>의 href로 이동
+        """
+        url = f"https://kanji.jitenon.jp/cat/search?getdata=-{unicoded_word}-"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        }
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # 요청 실패시 예외 발생
+
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        # 모든 <a> 태그 중 class에 ajax, color1 둘 다 포함된 첫번째 태그 찾기
+        for a in soup.find_all("a"):
+            class_list = a.get("class", [])
+            if "ajax" in class_list and "color1" in class_list:
+                webbrowser.open(f"{a.get("href")}#m_kousei")
+                return
+        print("class에 'ajax'와 'color1'이 모두 포함된 <a> 태그를 찾을 수 없습니다.")
+
 
     def update_progress_bar(self):
         """진행 바 업데이트"""
@@ -389,6 +422,9 @@ class FlashcardApp(ctk.CTk):
             if target == 3 : #GPT 질문 복사
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
                 pyperclip.copy(f"{target}가 어떤 부속 한자로 이루어져있는지 알려줘. 부속 한자의 뜻, 역할, 암시, 그리고 이 부속한자들의 전체적인 의미에 대해서 알려줘.")
+            if target == 4 : 
+                target = self.word_label.cget("text")[self.search_keys.index(word)]
+                self.open_kanji_detail_by_unicoded_word(f"{format(ord(target), '04X')}")
 
         else : 
             #단일한자를 시험보는경우
