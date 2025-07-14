@@ -7,6 +7,8 @@
 #Q : GPT 한테 할 질문 복사
 #E : 현재 보고있는 한자 복사
 
+#Ctrl + 3 : 한자와 (여러개의) 훈독을 여러줄로 VS Code 로 열기
+
 #(복수한자단어시험의 경우)
 #현재 단어의 
 #z : 1번째 한자 검색
@@ -125,7 +127,7 @@ class FlashcardApp(ctk.CTk):
         
         self.bind("1", lambda event: self.search(1))
         self.bind("2", lambda event: self.search(2))
-        self.bind("3", lambda event: self.search(3))
+        self.bind("3", lambda event: self.search(3, event=event))
         self.bind("4", lambda event: self.search(4))
         self.bind("q", lambda event: self.search(11));self.bind("Q", lambda event: self.search(11))
         self.bind("e", lambda event: self.search(12));self.bind("E", lambda event: self.search(12))
@@ -159,6 +161,11 @@ class FlashcardApp(ctk.CTk):
                 self.bind(f"<Alt-{key}>", lambda event, w=key: self.search(target=4,word=w)) #소문자 입력 감지
                 self.bind(f"<Alt-{key.upper()}>", lambda event, w=key: self.search(target=4,word=w)) #대문자 입력 감지
         
+
+        self.bind(f"<Control-{3}>", lambda event, w=3: self.search(target=5,word=w)) #소문자 입력 감지
+        
+
+
         #여러개의 한자를 시험볼 경우의 1,2,3 번째 한자
         #z : 검색
         #x : 복사
@@ -437,20 +444,25 @@ class FlashcardApp(ctk.CTk):
         webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
 
         
-    def search(self, target=None, word=None):
+    def search(self, target=None, word=None, event=None):
+        print("event.state :",event.state)
+
+
         #target 은 숫자, word 는 (들어온다면) 한자 정보 인입
+
+
         if word : 
             #복수한자를 시험보는 경우
             if target == 1 : #검색
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
                 self.naver_dictionary_open(target=target)
-            if target == 2 : #복사
+            elif target == 2 : #복사
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
                 pyperclip.copy(f"{target}")
-            if target == 3 : #GPT 질문 복사
+            elif target == 3 : #GPT 질문 복사
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
                 pyperclip.copy(f"{target}가 어떤 부속 한자로 이루어져있는지 알려줘. 부속 한자의 뜻, 역할, 암시, 그리고 이 부속한자들의 전체적인 의미에 대해서 알려줘.")
-            if target == 4 : 
+            elif target == 4 : 
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
                 url = self.open_kanji_detail_by_unicoded_word(f"{format(ord(target), '04X')}")
 
@@ -458,6 +470,19 @@ class FlashcardApp(ctk.CTk):
                 for part_idx in range(len(parts)):
                     parts[part_idx] = f"{parts[part_idx]}{target}"
                 self.open_txt_on_vscode(parts)
+            elif target == 5 : 
+                kanji = self.word_label.cget("text")[self.search_keys.index(word)]
+                
+                targets = self.m_label.cget("text").split("·")
+                target_list = []
+
+                for target in targets :
+                    target_list.append(f"{kanji} {target}")
+                    
+                self.open_txt_on_vscode(target_list)
+
+
+
 
         else : 
             #단일한자를 시험보는경우
@@ -466,10 +491,21 @@ class FlashcardApp(ctk.CTk):
                 target = target.split("(")[0].strip() #(N획) 구문 제거
             elif target == 2 : #음독
                 target = self.s_label.cget("text")
-            elif target == 3 : #훈독
-                target = self.m_label.cget("text")
             elif target == 4 : #한국어 뜻
                 target = self.km_label.cget("text")
+            elif target == 3 : #훈독
+                if event and event.state == 12 :
+                    #ctrl 이 눌렸을때.
+                    kanji = self.word_label.cget("text")
+                    targets = self.m_label.cget("text").split("·")
+                    target_list = []
+                    for target in targets :
+                        target_list.append(f"{kanji} {target}")
+                    self.open_txt_on_vscode(target_list)
+                    return
+                elif event and event.state == 8 :
+                    #ctrl 이 눌리지 않을때 
+                    target = self.m_label.cget("text")
 
             if not target in [11,12,13] :
                 url = f"https://ja.dict.naver.com/#/search?query={target}"
