@@ -21,6 +21,10 @@
 #Ctrl + x : 2번째 한자를 GPT에게 질문하는 글 복사
 #Ctrl + c : 3번째 한자를 GPT에게 질문하는 글 복사
 
+#Alt + z : 1번째 한자를 kanji.jitenon.jp 에 검색하고, 구성한자를 VS Code 로 열기
+#Alt + x : 2번째 한자를 kanji.jitenon.jp 에 검색하고, 구성한자를 VS Code 로 열기
+#Alt + c : 3번째 한자를 kanji.jitenon.jp 에 검색하고, 구성한자를 VS Code 로 열기
+
 #; : 시험종료 및 결과(를 CMD 창에)출력
 
 import customtkinter as ctk
