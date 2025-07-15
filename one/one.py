@@ -166,8 +166,8 @@ class FlashcardApp(ctk.CTk):
         
 
         self.bind(f"<Control-{3}>", lambda event, w=3: self.search(target=5,word=w))
-        self.bind(f"<Shift-s>", lambda event, w=key: self.search(target=6,word=w)) #소문자 입력 감지
-        self.bind(f"<Shift-S>", lambda event, w=key: self.search(target=6,word=w)) #대문자 입력 감지
+        self.bind(f"<s>", lambda event, w=key: self.search(target=6,word=w)) #소문자 입력 감지
+        self.bind(f"<S>", lambda event, w=key: self.search(target=6,word=w)) #대문자 입력 감지
         
 
 
