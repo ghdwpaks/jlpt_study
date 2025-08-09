@@ -7,6 +7,8 @@
 #Q : GPT 한테 할 질문 복사
 #E : 현재 보고있는 한자 복사
 
+#Ctrl + 3 : 한자와 (여러개의) 훈독을 여러줄로 VS Code 로 열기
+
 #(복수한자단어시험의 경우)
 #현재 단어의 
 #z : 1번째 한자 검색
@@ -21,6 +23,10 @@
 #Ctrl + x : 2번째 한자를 GPT에게 질문하는 글 복사
 #Ctrl + c : 3번째 한자를 GPT에게 질문하는 글 복사
 
+#Alt + z : 1번째 한자를 kanji.jitenon.jp 에 검색하고, 구성한자를 VS Code 로 열기
+#Alt + x : 2번째 한자를 kanji.jitenon.jp 에 검색하고, 구성한자를 VS Code 로 열기
+#Alt + c : 3번째 한자를 kanji.jitenon.jp 에 검색하고, 구성한자를 VS Code 로 열기
+
 #; : 시험종료 및 결과(를 CMD 창에)출력
 
 import customtkinter as ctk
@@ -29,6 +35,14 @@ import csv
 import sys 
 import pyperclip
 import ctypes
+import requests
+from bs4 import BeautifulSoup
+import webbrowser
+import tempfile
+import os
+import subprocess
+
+from get_chrome_path import get_chrome_path
 
 # CSV 파일 읽기
 def read_and_process_csv(file_path):
@@ -59,11 +73,11 @@ def read_and_process_csv(file_path):
 kanji_font_size = 240
 
 # 단일한자데이터시트 예시
-single_kanji_data = [{'k': '説', 'km': '설(명)', 'p': '言 (7획)', 's': 'せつ·ぜい', 'm': 'とく', 'knows': 0}, {'k': '差', 'km': '차(이)', 'p': '工 (3획)', 's': 'さ', 'm': 'さす', 'knows': 0}, {'k': '写', 'km': '사(본) (베끼다)', 'p': '冖 (2획)', 's': 'しゃ', 'm': 'うつす·うつる', 'knows': 0}, {'k': '適', 'km': '적(합)', 'p': '辶 (3획)', 's': 'てき', 'm': '', 'knows': 0}, {'k': '備', 'km': '(준)비(하다)', 'p': '亻 (2획)', 's': 'び', 'm': 'そなえる·そなわる', 'knows': 0}, {'k': '険', 'km': '(위)험(하다)', 'p': '阝左 (3획)', 's': 'けん', 'm': 'けわしい', 'knows': 0}, {'k': '相', 'km': '상(대)', 'p': '目 (5획)', 's': 'そう·しょう', 'm': 'あい', 'knows': 0}, {'k': '週', 'km': '(일)주(일)', 'p': '辶 (3획)', 's': 'しゅう', 'm': '', 'knows': 0}, {'k': '情', 'km': '(감)정', 'p': '忄 (3획)', 's': 'じ ょう·せい', 'm': 'なさけ', 'knows': 0}, {'k': '価', 'km': '가(치)', 'p': '亻 (2획)', 's': 'か', 'm': 'あたい', 'knows': 0}, {'k': '後', 'km': '후(회)', 'p': '彳 (3획)', 's': 'ご·こう', 'm': 'あと·うしろ·のち·おくれる', 'knows': 0}, {'k': '病', 'km': '병(명)', 'p': '疒 (5획)', 's': 'びょう·へい', 'm': 'やまい·やむ', 'knows': 0}, {'k': '関', 'km': '관(계)', 'p': '門 (8획)', 's': 'かん', 'm': 'かかわる·せき', 'knows': 0}, {'k': '頑', 'km': '완(고)', 'p': '頁 (9획)', 's': 'がん', 'm': '', 'knows': 0}, {'k': '係', 'km': '계(원)', 'p': ' 亻 (2획)', 's': 'けい', 'm': 'かかり·かかる', 'knows': 0}, {'k': '事', 'km': '사(실)', 'p': '亅 (1획)', 's': 'じ·ず', 'm': 'こと', 'knows': 0}, {'k': '宿', 'km': '숙(박하다)', 'p': '宀 (3획)', 's': 'しゅく', 'm': 'やど·やどす·やどる', 'knows': 0}, {'k': '張', 'km': '(주)장 / 뻗어나다', 'p': '弓 (3획)', 's': 'ちょう', 'm': 'はる', 'knows': 0}, {'k': '勢', 'km': '세(력)', 'p': '力 (2획)', 's': 'せい', 'm': 'いきおい', 'knows': 0}, {'k': '摂', 'km': '섭(취)', 'p': ' 扌 (3획)', 's': 'せつ', 'm': '', 'knows': 0}, {'k': '語', 'km': '(언)어', 'p': '言 (7획)', 's': 'ご', 'm': 'かたらう·かたる', 'knows': 0}, {'k': '確', 'km': '확(신)', 'p': '石 (5획)', 's': 'かく', 'm': 'たしか·たしかめる', 'knows': 0}, {'k': '定', 'km': '(결)정', 'p': '宀 (3획)', 's': 'じょう·てい', 'm': 'さだまる·さだめる·さだか', 'knows': 0}]
+single_kanji_data = [{'k': '定', 'km': '(결)정', 'p': '宀 (3획)', 's': 'じょう·てい', 'm': 'さだまる·さだめる·さだか', 'knows': 0}]
 
 
 test_data = single_kanji_data
-test_data = read_and_process_csv("C:\\t\\j\\words\\dkw1.csv")
+test_data = read_and_process_csv("..\\words\\心1w.csv")
 
 # CustomTkinter 테마 설정
 ctk.set_appearance_mode("dark")  # 다크 모드
@@ -115,7 +129,7 @@ class FlashcardApp(ctk.CTk):
         
         self.bind("1", lambda event: self.search(1))
         self.bind("2", lambda event: self.search(2))
-        self.bind("3", lambda event: self.search(3))
+        self.bind("3", lambda event: self.search(3, event=event))
         self.bind("4", lambda event: self.search(4))
         self.bind("q", lambda event: self.search(11));self.bind("Q", lambda event: self.search(11))
         self.bind("e", lambda event: self.search(12));self.bind("E", lambda event: self.search(12))
@@ -142,7 +156,18 @@ class FlashcardApp(ctk.CTk):
             if len(word) > i:
                 self.bind(f"<Control-{key}>", lambda event, w=key: self.search(target=3,word=w)) #소문자 입력 감지
                 self.bind(f"<Control-{key.upper()}>", lambda event, w=key: self.search(target=3,word=w)) #대문자 입력 감지
+
+        #여러개의 한자를 시험볼 경우의 1,2,3 번째 한자 복사
+        for i, key in enumerate(self.search_keys):
+            if len(word) > i:
+                self.bind(f"<Alt-{key}>", lambda event, w=key: self.search(target=4,word=w)) #소문자 입력 감지
+                self.bind(f"<Alt-{key.upper()}>", lambda event, w=key: self.search(target=4,word=w)) #대문자 입력 감지
         
+
+        self.bind(f"<Control-{3}>", lambda event, w=3: self.search(target=5,word=w)) #소문자 입력 감지
+        
+
+
         #여러개의 한자를 시험볼 경우의 1,2,3 번째 한자
         #z : 검색
         #x : 복사
@@ -171,6 +196,63 @@ class FlashcardApp(ctk.CTk):
         self.show_initial_screen()
 
         #self.focus_set()
+
+    def extract_kousei_parts(self, detail_url: str):
+        """
+        상세페이지에서, <span class="separator2">가 있는 <li>만,
+        해당 li의 출력 텍스트(예: '广＋心')를 리스트에 담아 반환
+        """
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        }
+        print("detail_url :",detail_url)
+        res = requests.get(detail_url, headers=headers)
+        res.raise_for_status()
+        soup = BeautifulSoup(res.text, "html.parser")
+
+        result = []
+        # 모든 <li> 검사
+        for li in soup.find_all("li"):
+            # li 안에 <span class="separator2">가 있으면
+            if li.find("span", class_="separator2"):
+                text = li.get_text(strip=True)
+                result.append(f"{text} = ")
+        return result
+
+    def open_kanji_detail_by_unicoded_word(self, unicoded_word: str):
+        """
+        지정한 유니코드 한자(16진수)에 대한 jitenon 검색 결과 페이지에서
+        class에 'ajax'와 'color1'이 모두 포함된 첫번째 <a>의 href로 이동
+        """
+        url = f"https://kanji.jitenon.jp/cat/search?getdata=-{unicoded_word}-"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        }
+
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # 요청 실패시 예외 발생
+
+        soup = BeautifulSoup(response.text, "html.parser")
+        return_url = None
+        # 모든 <a> 태그 중 class에 ajax, color1 둘 다 포함된 첫번째 태그 찾기
+        for a in soup.find_all("a"):
+            class_list = a.get("class", [])
+            if "ajax" in class_list and "color1" in class_list:
+                return_url = f"{a.get("href")}#m_kousei"
+                #webbrowser.open(return_url)
+                return return_url
+            
+        print(f"unicoded_word : {unicoded_word} / class에 'ajax'와 'color1'이 모두 포함된 <a> 태그를 찾을 수 없습니다.")
+        for a in soup.find_all("a"):
+            class_list = a.get("class", [])
+            if "ajax" in class_list :
+                return_url = f"{a.get("href")}#m_kousei"
+                #webbrowser.open(return_url)
+                return return_url
+            
+        print(f"unicoded_word : {unicoded_word} / class에 'ajax'가 모두 포함된 <a> 태그를 찾을 수 없습니다.")
+
+
 
     def update_progress_bar(self):
         """진행 바 업데이트"""
@@ -372,23 +454,48 @@ class FlashcardApp(ctk.CTk):
 
     def search_radical(self, event=None):
         url = f"https://ja.dict.naver.com/#/search?query={self.p_label.cget("text")}"
-        chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Chrome 경로
-        webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
-
+        webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(get_chrome_path()))
+        webbrowser.get('chrome').open(url)
         
-    def search(self, target=None, word=None):
+    def search(self, target=None, word=None, event=None):
+        print("self :",self)
+        print("target :",target)
+        print("word :",word)
+        print("event :",event)
+
+
         #target 은 숫자, word 는 (들어온다면) 한자 정보 인입
+
+
         if word : 
             #복수한자를 시험보는 경우
             if target == 1 : #검색
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
                 self.naver_dictionary_open(target=target)
-            if target == 2 : #복사
+            elif target == 2 : #복사
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
                 pyperclip.copy(f"{target}")
-            if target == 3 : #GPT 질문 복사
+            elif target == 3 : #GPT 질문 복사
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
                 pyperclip.copy(f"{target}가 어떤 부속 한자로 이루어져있는지 알려줘. 부속 한자의 뜻, 역할, 암시, 그리고 이 부속한자들의 전체적인 의미에 대해서 알려줘.")
+            elif target == 4 : 
+                target = self.word_label.cget("text")[self.search_keys.index(word)]
+                url = self.open_kanji_detail_by_unicoded_word(f"{format(ord(target), '04X')}")
+
+                parts = self.extract_kousei_parts(url)
+                for part_idx in range(len(parts)):
+                    parts[part_idx] = f"{parts[part_idx]}{target}"
+                self.open_txt_on_vscode(parts)
+            elif target == 5 : 
+                kanji = self.word_label.cget("text")[self.search_keys.index(word)]
+                
+                targets = self.m_label.cget("text").split("·")
+                target_list = []
+
+                for target in targets :
+                    target_list.append(f"{kanji} {target}")
+                    
+                self.open_txt_on_vscode(target_list)
 
         else : 
             #단일한자를 시험보는경우
@@ -397,15 +504,28 @@ class FlashcardApp(ctk.CTk):
                 target = target.split("(")[0].strip() #(N획) 구문 제거
             elif target == 2 : #음독
                 target = self.s_label.cget("text")
-            elif target == 3 : #훈독
-                target = self.m_label.cget("text")
             elif target == 4 : #한국어 뜻
                 target = self.km_label.cget("text")
+            elif target == 3 : #훈독
+                if event and event.state == 12 :
+                    #ctrl 이 눌렸을때.
+                    kanji = self.word_label.cget("text")
+                    targets = self.m_label.cget("text").split("·")
+                    target_list = []
+                    for target in targets :
+                        target_list.append(f"{kanji} {target}")
+                    self.open_txt_on_vscode(target_list)
+                    return
+                elif event and event.state == 8 :
+                    #ctrl 이 눌리지 않을때 
+                    target = self.m_label.cget("text")
 
             if not target in [11,12,13] :
                 url = f"https://ja.dict.naver.com/#/search?query={target}"
-                chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Chrome 경로
-                webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
+                
+                webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(get_chrome_path()))
+                webbrowser.get('chrome').open(url)
+
             else : 
                 if target == 11 : 
                     target = self.word_label.cget("text")
@@ -416,7 +536,18 @@ class FlashcardApp(ctk.CTk):
                 elif target == 13 :
                     self.next_card(selected_end=True)
 
+    def open_txt_on_vscode(self, strings):
+        # 임시 txt 파일 생성
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt', encoding='utf-8') as tmp:
+            tmp.write('\n'.join(strings))
+            tmp_filename = tmp.name
 
+        # VSCode에서 파일 열기
+        if sys.platform.startswith("win"):
+            subprocess.Popen(['code', tmp_filename], shell=True)
+        else:
+            subprocess.Popen(['code', tmp_filename])
+            
     def on_key_press(self, event=None):
         """사용자가 아무 키나 입력했을 때 다음 진행"""
         self.end_label.pack_forget()  # 뜻 화면 숨기기
@@ -441,13 +572,15 @@ class FlashcardApp(ctk.CTk):
             ctypes.windll.user32.keybd_event(0x14, 0, 2, 0)  # Caps Lock 키 뗌
             
     def naver_dictionary_open(self=None, target="") :
+
+        
         url = f"https://ja.dict.naver.com/#/search?query={target}"
-        chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Chrome 경로
-        webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
+        
+        webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(get_chrome_path()))
+        webbrowser.get('chrome').open(url)
         
 # 앱 실행
 if __name__ == "__main__":
     app = FlashcardApp()
     app.mainloop()
-
 
