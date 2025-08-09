@@ -18,6 +18,7 @@
 #Shift + z : 1번째 한자 복사
 #Shift + x : 2번째 한자 복사
 #Shift + c : 3번째 한자 복사
+#Shift + s : 한자와 (여러개의) 훈독을 여러줄로 VS Code 로 열기
 
 #Ctrl + z : 1번째 한자를 GPT에게 질문하는 글 복사
 #Ctrl + x : 2번째 한자를 GPT에게 질문하는 글 복사
@@ -41,8 +42,6 @@ import webbrowser
 import tempfile
 import os
 import subprocess
-
-from get_chrome_path import get_chrome_path
 
 # CSV 파일 읽기
 def read_and_process_csv(file_path):
@@ -73,11 +72,13 @@ def read_and_process_csv(file_path):
 kanji_font_size = 240
 
 # 단일한자데이터시트 예시
-single_kanji_data = [{'k': '定', 'km': '(결)정', 'p': '宀 (3획)', 's': 'じょう·てい', 'm': 'さだまる·さだめる·さだか', 'knows': 0}]
+single_kanji_data = [{'kan': '秘密', 'sound': 'ひみつ', 'mean': '[명사, ダナノ] 비밀'},{'kan': '秘書', 'sound': 'ひしょ', 'mean': '[명사] (비서)비축해 둔 서적'},{'kan': '恐怖', 'sound': 'きょうふ', 'mean': '[명사, ス자동사] 공포'},{'kan': '恐縮', 'sound': 'きょうしゅく', 'mean': '[명사, ス자동사] 1.공축, 폐에 대해 죄송스럽게 여김 2.졌다고 인정함'},{'kan': '恐れ入る', 'sound': 'おそれいる', 'mean': '[5단활용 자동사] 1.황송해하다, 송구스러워하다 2.죄송해하다'},{'kan': '恋人', 'sound': 'こいびと', 'mean': '[명사] 연인, 애인'},{'kan': '恋愛', 'sound': 'れんあい', 'mean': '[명사, ス자동사] 연애'},{'kan': '窓口', 'sound': 'まどぐち', 'mean': '[명사] 1.창구 2.창을 통해 사무를 보는 곳 3.외부와 절충하고 교섭하는 곳, 또, 그 역할'},{'kan': '悪魔', 'sound': 'あくま', 'mean': '[명사] 악마'},{'kan': '悪戯', 'sound': 'いたずら', 'mean': '[명사ノナ, ス자동사] 1.장난, 못된 장난, 장난질 2.자기가 하는 일의 겸사말'},{'kan': '悪化', 'sound': 'あっか', 'mean': '[명사, ス자동사] 악화'},{'kan': '悪者', 'sound': 'わるもの', 'mean': '[명사] 나쁜 놈, 악인'},{'kan': '悪口', 'sound': 'わるくち', 'mean': '[명사] 욕'},{'kan': '悪日', 'sound': 'あくび', 'mean': '[명사]운 없는 날'},{'kan': '密接', 'sound': 'みっせつ', 'mean': '[ス자동사] 빈틈없이 꼭 붙음'},{'kan': '密集', 'sound': 'みっしゅう', 'mean': '[명사, ス자동사] 밀집'},{'kan': '密度', 'sound': 'みつど', 'mean': '[명사] 밀도'},{'kan': '患者', 'sound': 'かんじゃ', 'mean': '[명사] 환자'},{'kan': '悠々', 'sound': 'ゆうゆう', 'mean': '[トタル] 1.한가하고 느긋한 모양 2.충분히 여유가 있는 모양'},{'kan': '悠然', 'sound': 'ゆうぜん', 'mean': '[トタル] 유연, 침착하고 여유가 있는 모양'},{'kan': '惑星', 'sound': 'わくせい', 'mean': '[명사] 1.혹성 2.행성 3.실력은 모르나 유력해 보이는 인물'},{'kan': '悲劇', 'sound': 'ひげき', 'mean': '[명사] 비극'},{'kan': '悲鳴', 'sound': 'ひめい', 'mean': '[명사, ス자동사] 비명'},{'kan': '悲惨', 'sound': 'ひさん', 'mean': '[명사ノナ] 비참'},{'kan': '悲観', 'sound': 'ひかん', 'mean': '[명사, ス자동사·타동사] 비관'},{'kan': '意味', 'sound': 'いみ', 'mean': '[명사, ス타동사] 1.의미, 뜻 2.말의 뜻 3.의도, 까닭'},{'kan': '意志', 'sound': 'いし', 'mean': '[명사] 1.의지 2.의사, 생각, 의향 3.무언가를 이루려고 하는 적극적인 심적 상태'},{'kan': '意識', 'sound': 'いしき', 'mean': '[명사, ス타동사] 의식'},{'kan': '意見', 'sound': 'いけん', 'mean': '[명사, ス자동사] 1.의견,주장·생각 2.훈계함,타이름'},{'kan': '意思', 'sound': 'いし', 'mean': '[명사] 1.의사 2.무엇을 하고자 하는 근원이 되는 생각∙의도'},{'kan': '意外', 'sound': 'いがい', 'mean': '[명사, ダナノ] 의외, 뜻밖, 예상외'},{'kan': '意義', 'sound': 'いぎ', 'mean': '[명사] 1.의의 2.뜻, 의미 3.(어떤 것이 갖는) 가치, 값어치'},{'kan': '意地悪', 'sound': 'いじわる', 'mean': '[명사ノナ] 심술궂음, 짓궂음, 또, 심술쟁이'},{'kan': '威張る', 'sound': 'いばる', 'mean': '[5단활용 자동사] 뽐내다, 거만하게 굴다, 으스대다'},{'kan': '意図', 'sound': 'いと', 'mean': '[명사, ス타동사] 의도'},{'kan': '意向', 'sound': 'いこう', 'mean': '[명사] 의향'},{'kan': '意地', 'sound': 'いじ', 'mean': '[명사] 1.마음씨, 심지, 근성, 성미 2.고집, 오기 3.물욕, 식욕'},{'kan': '意欲', 'sound': 'いよく', 'mean': '[명사] 의욕'},{'kan': '意気込む', 'sound': 'いきごむ', 'mean': '[5단활용 자동사] 분발하다, 벼르다, 힘내다, 의욕에 불타다, 단단히 마음먹다'},{'kan': '感情', 'sound': 'かんじょう', 'mean': '[명사] 감정'},{'kan': '感覚', 'sound': 'かんかく', 'mean': '[명사] 감각'},{'kan': '感染', 'sound': 'かんせん', 'mean': '[명사, ス자동사] 1.감염'},{'kan': '感謝', 'sound': 'かんしゃ', 'mean': '[명사, ス자동사·타동사] 감사, 고맙게 여기는 것, 또, 그 마음'},{'kan': '感動', 'sound': 'かんどう', 'mean': '[명사, ス자동사] 감동'},{'kan': '感心', 'sound': 'かんしん', 'mean': '[명사, ス자동사] 1.감심, 감탄 2.질림, 어이없음, 기가 막힘'},{'kan': '感想', 'sound': 'かんそう', 'mean': '[명사] 감상, 마음에 떠오르는 느낌이나 생각'},{'kan': '感激', 'sound': 'かんげき', 'mean': '[명사, ス자동사] 감격'},{'kan': '感触', 'sound': 'かんしょく', 'mean': '[명사] 1.감촉, 촉감 2.상대의 태도나 분위기 등으로 받는 느낌[인상]'},{'kan': '感慨', 'sound': 'かんがい', 'mean': '[명사] 감개'},{'kan': '感度', 'sound': 'かんど', 'mean': '[명사] 감도'},{'kan': '感無量', 'sound': 'かんむりょう', 'mean': '[명사, ダナ] 감개무량, 마음속의 감동이나 느낌이 헤아릴 수 없는 것, 또, 그런 모양'}]
+
 
 
 test_data = single_kanji_data
-test_data = read_and_process_csv("..\\words\\心1w.csv")
+test_data = read_and_process_csv("C:\\t\\ghdwpaks\\words\\dkw1_k1.csv")
+
 
 # CustomTkinter 테마 설정
 ctk.set_appearance_mode("dark")  # 다크 모드
@@ -164,7 +165,9 @@ class FlashcardApp(ctk.CTk):
                 self.bind(f"<Alt-{key.upper()}>", lambda event, w=key: self.search(target=4,word=w)) #대문자 입력 감지
         
 
-        self.bind(f"<Control-{3}>", lambda event, w=3: self.search(target=5,word=w)) #소문자 입력 감지
+        self.bind(f"<Control-{3}>", lambda event, w=3: self.search(target=5,word=w))
+        self.bind(f"<s>", lambda event, w=key: self.search(target=6,word=w)) #소문자 입력 감지
+        self.bind(f"<S>", lambda event, w=key: self.search(target=6,word=w)) #대문자 입력 감지
         
 
 
@@ -205,7 +208,6 @@ class FlashcardApp(ctk.CTk):
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
         }
-        print("detail_url :",detail_url)
         res = requests.get(detail_url, headers=headers)
         res.raise_for_status()
         soup = BeautifulSoup(res.text, "html.parser")
@@ -228,7 +230,6 @@ class FlashcardApp(ctk.CTk):
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
         }
-
         response = requests.get(url, headers=headers)
         response.raise_for_status()  # 요청 실패시 예외 발생
 
@@ -239,19 +240,18 @@ class FlashcardApp(ctk.CTk):
             class_list = a.get("class", [])
             if "ajax" in class_list and "color1" in class_list:
                 return_url = f"{a.get("href")}#m_kousei"
-                #webbrowser.open(return_url)
+                webbrowser.open(return_url)
                 return return_url
-            
-        print(f"unicoded_word : {unicoded_word} / class에 'ajax'와 'color1'이 모두 포함된 <a> 태그를 찾을 수 없습니다.")
+        print("class에 'ajax'와 'color1'이 모두 포함된 <a> 태그를 찾을 수 없습니다.")
+
         for a in soup.find_all("a"):
             class_list = a.get("class", [])
             if "ajax" in class_list :
                 return_url = f"{a.get("href")}#m_kousei"
-                #webbrowser.open(return_url)
+                webbrowser.open(return_url)
                 return return_url
             
         print(f"unicoded_word : {unicoded_word} / class에 'ajax'가 모두 포함된 <a> 태그를 찾을 수 없습니다.")
-
 
 
     def update_progress_bar(self):
@@ -458,10 +458,6 @@ class FlashcardApp(ctk.CTk):
         webbrowser.get('chrome').open(url)
         
     def search(self, target=None, word=None, event=None):
-        print("self :",self)
-        print("target :",target)
-        print("word :",word)
-        print("event :",event)
 
 
         #target 은 숫자, word 는 (들어온다면) 한자 정보 인입
@@ -472,9 +468,11 @@ class FlashcardApp(ctk.CTk):
             if target == 1 : #검색
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
                 self.naver_dictionary_open(target=target)
+
             elif target == 2 : #복사
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
                 pyperclip.copy(f"{target}")
+
             elif target == 3 : #GPT 질문 복사
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
                 pyperclip.copy(f"{target}가 어떤 부속 한자로 이루어져있는지 알려줘. 부속 한자의 뜻, 역할, 암시, 그리고 이 부속한자들의 전체적인 의미에 대해서 알려줘.")
@@ -496,6 +494,30 @@ class FlashcardApp(ctk.CTk):
                     target_list.append(f"{kanji} {target}")
                     
                 self.open_txt_on_vscode(target_list)
+
+            elif target == 4 : 
+                target = self.word_label.cget("text")[self.search_keys.index(word)]
+                url = self.open_kanji_detail_by_unicoded_word(f"{format(ord(target), '04X')}")
+
+                parts = self.extract_kousei_parts(url)
+                for part_idx in range(len(parts)):
+                    parts[part_idx] = f"{parts[part_idx]}{target}"
+                self.open_txt_on_vscode(parts)
+
+            elif target == 5 : 
+                kanji = self.word_label.cget("text")[self.search_keys.index(word)]
+                
+                targets = self.m_label.cget("text").split("·")
+                target_list = []
+
+                for target in targets :
+                    target_list.append(f"{kanji} {target}")
+                    
+                self.open_txt_on_vscode(target_list)
+
+            elif target == 6 : 
+                data = self.remaining_data[self.current_index]['k']
+                pyperclip.copy(f"{data}")
 
         else : 
             #단일한자를 시험보는경우
