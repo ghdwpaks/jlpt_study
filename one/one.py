@@ -1,3 +1,5 @@
+csv_file_path = "z_out175734_21_41.csv"
+
 #Caps Lock 주의!!!
 
 #1 : 네이버 일본어 사전에서 부수 검색
@@ -77,7 +79,7 @@ single_kanji_data = [{'kan': '秘密', 'sound': 'ひみつ', 'mean': '[명사, �
 
 
 test_data = single_kanji_data
-test_data = read_and_process_csv("C:\\t\\ghdwpaks\\words\\dkw1_k1.csv")
+test_data = read_and_process_csv(csv_file_path)
 
 
 # CustomTkinter 테마 설정
