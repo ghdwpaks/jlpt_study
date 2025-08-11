@@ -1,0 +1,67 @@
+{
+  "task_version": 164,
+  "source_file_csv_path": "z_out175734_1_20.csv",
+  "ignored_id_list": [
+    7,
+    9,
+    1,
+    12,
+    16,
+    19,
+    3,
+    14
+  ],
+  "data_id_list": [
+    [],
+    [
+      18,
+      10
+    ]
+  ],
+  "data": [
+    [],
+    [
+      {
+        "idx": 18,
+        "sentence": "彼はいつも明るい笑顔で話す。",
+        "reading": "かれは / いつも / あかるい / えがおで / はなす。",
+        "meaning": "그는 항상 밝은 미소로 이야기한다.",
+        "main_word": "会話体",
+        "words_info": [
+          {
+            "word": "笑顔",
+            "word_reading": "えがお",
+            "word_meaning": "미소"
+          }
+        ],
+        "main_word_reading": "かいわたい",
+        "main_word_meaning": "회화체",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 10,
+        "sentence": "僕の趣味は映画の分類だ。",
+        "reading": "ぼくの / しゅみは / えいがの / ぶんるいだ。",
+        "meaning": "내 취미는 영화 분류다.",
+        "main_word": "分類",
+        "words_info": [
+          {
+            "word": "趣味",
+            "word_reading": "しゅみ",
+            "word_meaning": "취미"
+          },
+          {
+            "word": "映画",
+            "word_reading": "えいが",
+            "word_meaning": "영화"
+          }
+        ],
+        "main_word_reading": "ぶんるい",
+        "main_word_meaning": "분류",
+        "is_good": true,
+        "contacted": false
+      }
+    ]
+  ]
+}
