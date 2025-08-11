@@ -1,3 +1,5 @@
+csv_file_path = "z_out175734_21_41.csv"
+
 #Caps Lock 주의!!!
 
 #1 : 네이버 일본어 사전에서 부수 검색
@@ -43,6 +45,21 @@ import tempfile
 import os
 import subprocess
 
+font_size = 64#32,64
+font_info = {
+    "title_label":20,
+    "info_label":14,
+    "num_parts_label":14,
+    "current_part_label":14,
+    "p_label":font_size,
+    "s_label":font_size,
+    "m_label":font_size,
+    "km_label":font_size,
+    "end_label":font_size,
+    "kanji_font_size":360,#360,240
+}
+
+
 # CSV 파일 읽기
 def read_and_process_csv(file_path):
     with open(file_path, mode="r", encoding="utf-8") as file:
@@ -69,15 +86,15 @@ def read_and_process_csv(file_path):
     return processed_data
 
 
-kanji_font_size = 240
+
 
 # 단일한자데이터시트 예시
-single_kanji_data = [{'kan': '秘密', 'sound': 'ひみつ', 'mean': '[명사, ダナノ] 비밀'},{'kan': '秘書', 'sound': 'ひしょ', 'mean': '[명사] (비서)비축해 둔 서적'},{'kan': '恐怖', 'sound': 'きょうふ', 'mean': '[명사, ス자동사] 공포'},{'kan': '恐縮', 'sound': 'きょうしゅく', 'mean': '[명사, ス자동사] 1.공축, 폐에 대해 죄송스럽게 여김 2.졌다고 인정함'},{'kan': '恐れ入る', 'sound': 'おそれいる', 'mean': '[5단활용 자동사] 1.황송해하다, 송구스러워하다 2.죄송해하다'},{'kan': '恋人', 'sound': 'こいびと', 'mean': '[명사] 연인, 애인'},{'kan': '恋愛', 'sound': 'れんあい', 'mean': '[명사, ス자동사] 연애'},{'kan': '窓口', 'sound': 'まどぐち', 'mean': '[명사] 1.창구 2.창을 통해 사무를 보는 곳 3.외부와 절충하고 교섭하는 곳, 또, 그 역할'},{'kan': '悪魔', 'sound': 'あくま', 'mean': '[명사] 악마'},{'kan': '悪戯', 'sound': 'いたずら', 'mean': '[명사ノナ, ス자동사] 1.장난, 못된 장난, 장난질 2.자기가 하는 일의 겸사말'},{'kan': '悪化', 'sound': 'あっか', 'mean': '[명사, ス자동사] 악화'},{'kan': '悪者', 'sound': 'わるもの', 'mean': '[명사] 나쁜 놈, 악인'},{'kan': '悪口', 'sound': 'わるくち', 'mean': '[명사] 욕'},{'kan': '悪日', 'sound': 'あくび', 'mean': '[명사]운 없는 날'},{'kan': '密接', 'sound': 'みっせつ', 'mean': '[ス자동사] 빈틈없이 꼭 붙음'},{'kan': '密集', 'sound': 'みっしゅう', 'mean': '[명사, ス자동사] 밀집'},{'kan': '密度', 'sound': 'みつど', 'mean': '[명사] 밀도'},{'kan': '患者', 'sound': 'かんじゃ', 'mean': '[명사] 환자'},{'kan': '悠々', 'sound': 'ゆうゆう', 'mean': '[トタル] 1.한가하고 느긋한 모양 2.충분히 여유가 있는 모양'},{'kan': '悠然', 'sound': 'ゆうぜん', 'mean': '[トタル] 유연, 침착하고 여유가 있는 모양'},{'kan': '惑星', 'sound': 'わくせい', 'mean': '[명사] 1.혹성 2.행성 3.실력은 모르나 유력해 보이는 인물'},{'kan': '悲劇', 'sound': 'ひげき', 'mean': '[명사] 비극'},{'kan': '悲鳴', 'sound': 'ひめい', 'mean': '[명사, ス자동사] 비명'},{'kan': '悲惨', 'sound': 'ひさん', 'mean': '[명사ノナ] 비참'},{'kan': '悲観', 'sound': 'ひかん', 'mean': '[명사, ス자동사·타동사] 비관'},{'kan': '意味', 'sound': 'いみ', 'mean': '[명사, ス타동사] 1.의미, 뜻 2.말의 뜻 3.의도, 까닭'},{'kan': '意志', 'sound': 'いし', 'mean': '[명사] 1.의지 2.의사, 생각, 의향 3.무언가를 이루려고 하는 적극적인 심적 상태'},{'kan': '意識', 'sound': 'いしき', 'mean': '[명사, ス타동사] 의식'},{'kan': '意見', 'sound': 'いけん', 'mean': '[명사, ス자동사] 1.의견,주장·생각 2.훈계함,타이름'},{'kan': '意思', 'sound': 'いし', 'mean': '[명사] 1.의사 2.무엇을 하고자 하는 근원이 되는 생각∙의도'},{'kan': '意外', 'sound': 'いがい', 'mean': '[명사, ダナノ] 의외, 뜻밖, 예상외'},{'kan': '意義', 'sound': 'いぎ', 'mean': '[명사] 1.의의 2.뜻, 의미 3.(어떤 것이 갖는) 가치, 값어치'},{'kan': '意地悪', 'sound': 'いじわる', 'mean': '[명사ノナ] 심술궂음, 짓궂음, 또, 심술쟁이'},{'kan': '威張る', 'sound': 'いばる', 'mean': '[5단활용 자동사] 뽐내다, 거만하게 굴다, 으스대다'},{'kan': '意図', 'sound': 'いと', 'mean': '[명사, ス타동사] 의도'},{'kan': '意向', 'sound': 'いこう', 'mean': '[명사] 의향'},{'kan': '意地', 'sound': 'いじ', 'mean': '[명사] 1.마음씨, 심지, 근성, 성미 2.고집, 오기 3.물욕, 식욕'},{'kan': '意欲', 'sound': 'いよく', 'mean': '[명사] 의욕'},{'kan': '意気込む', 'sound': 'いきごむ', 'mean': '[5단활용 자동사] 분발하다, 벼르다, 힘내다, 의욕에 불타다, 단단히 마음먹다'},{'kan': '感情', 'sound': 'かんじょう', 'mean': '[명사] 감정'},{'kan': '感覚', 'sound': 'かんかく', 'mean': '[명사] 감각'},{'kan': '感染', 'sound': 'かんせん', 'mean': '[명사, ス자동사] 1.감염'},{'kan': '感謝', 'sound': 'かんしゃ', 'mean': '[명사, ス자동사·타동사] 감사, 고맙게 여기는 것, 또, 그 마음'},{'kan': '感動', 'sound': 'かんどう', 'mean': '[명사, ス자동사] 감동'},{'kan': '感心', 'sound': 'かんしん', 'mean': '[명사, ス자동사] 1.감심, 감탄 2.질림, 어이없음, 기가 막힘'},{'kan': '感想', 'sound': 'かんそう', 'mean': '[명사] 감상, 마음에 떠오르는 느낌이나 생각'},{'kan': '感激', 'sound': 'かんげき', 'mean': '[명사, ス자동사] 감격'},{'kan': '感触', 'sound': 'かんしょく', 'mean': '[명사] 1.감촉, 촉감 2.상대의 태도나 분위기 등으로 받는 느낌[인상]'},{'kan': '感慨', 'sound': 'かんがい', 'mean': '[명사] 감개'},{'kan': '感度', 'sound': 'かんど', 'mean': '[명사] 감도'},{'kan': '感無量', 'sound': 'かんむりょう', 'mean': '[명사, ダナ] 감개무량, 마음속의 감동이나 느낌이 헤아릴 수 없는 것, 또, 그런 모양'}]
+single_kanji_data = [{'k': '評論文', 'km': '평론', 'p': '', 's': 'ひょうろんぶん', 'm': '', 'knows': 0}, {'k': '読解', 'km': '독해', 'p': '', 's': 'どっかい', 'm': '', 'knows': 0}, {'k': '推測力', 'km': '추측력', 'p': '', 's': 'すいそくりょく', 'm': '', 'knows': 0}, {'k': '成果', 'km': '성과', 'p': '', 's': 'せいか', 'm': '', 'knows': 0}, {'k': '文型', 'km': '문형', 'p': '', 's': 'ぶんけい', 'm': '', 'knows': 0}, {'k': '相談', 'km': '상담', 'p': '', 's': 'そうだん', 'm': '', 'knows': 0}, {'k': '対話', 'km': '대화', 'p': '', 's': 'たいわ', 'm': '', 'knows': 0}, {'k': '実践', 'km': '실천', 'p': '', 's': 'じっせん', 'm': '', 'knows': 0}, {'k': '慎重', 'km': '신중', 'p': '', 's': 'しんちょう', 'm': '', 'knows': 0}, {'k': '補完', 'km': '보완', 'p': '', 's': 'ほかん', 'm': '', 'knows': 0}, {'k': '妥当', 'km': '적절', 'p': '', 's': 'だとう', 'm': '', 'knows': 0}, {'k': '構文', 'km': '구문', 'p': '', 's': 'こうぶん', 'm': '', 'knows': 0}, {'k': '効果的', 'km': '효과적', 'p': '', 's': 'こうかてき', 'm': '', 'knows': 0}, {'k': '蓄積', 'km': '축적', 'p': '', 's': 'ちくせき', 'm': '', 'knows': 0}, {'k': '構成要素', 'km': '구성요소', 'p': '', 's': 'こうせいようそ', 'm': '', 'knows': 0}]
 
 
 
+test_data = read_and_process_csv(csv_file_path)
 test_data = single_kanji_data
-test_data = read_and_process_csv("C:\\t\\ghdwpaks\\words\\dkw1_k1.csv")
 
 
 # CustomTkinter 테마 설정
@@ -335,25 +352,24 @@ class FlashcardApp(ctk.CTk):
 
     # '뜻 화면' 구성
     def setup_meaning_frame(self):
-        font_size = 32
         # 파란색 영역 (p)
-        self.p_label = ctk.CTkLabel(self.meaning_frame, text="",  text_color="#ADD8E6", font=("나눔바른고딕", font_size), height=60)
+        self.p_label = ctk.CTkLabel(self.meaning_frame, text="",  text_color="#ADD8E6", font=("나눔바른고딕", font_info["p_label"]), height=60)
         self.p_label.pack(pady=5, fill="x")
 
         # 어두운 초록 영역 (s)
-        self.s_label = ctk.CTkLabel(self.meaning_frame, text="", text_color="#90EE90", font=("나눔바른고딕", font_size), height=30)
+        self.s_label = ctk.CTkLabel(self.meaning_frame, text="", text_color="#90EE90", font=("나눔바른고딕", font_info["s_label"]), height=30)
         self.s_label.pack(pady=5, fill="x")
 
         # 보라색 영역 (m)
-        self.m_label = ctk.CTkLabel(self.meaning_frame, text="", text_color="#DDA0DD", font=("나눔바른고딕", font_size), height=30)
+        self.m_label = ctk.CTkLabel(self.meaning_frame, text="", text_color="#DDA0DD", font=("나눔바른고딕", font_info["m_label"]), height=30)
         self.m_label.pack(pady=5, fill="x")
 
         # 회색 영역 (km)
-        self.km_label = ctk.CTkLabel(self.meaning_frame, text="", text_color="#E0E0E0", font=("나눔바른고딕", font_size), height=30)
+        self.km_label = ctk.CTkLabel(self.meaning_frame, text="", text_color="#E0E0E0", font=("나눔바른고딕", font_info["km_label"]), height=30)
         self.km_label.pack(pady=5, fill="x")
 
         
-        self.end_label = ctk.CTkLabel(self.meaning_frame, text="", text_color="#E0E0E0", font=("나눔바른고딕", font_size), height=30)
+        self.end_label = ctk.CTkLabel(self.meaning_frame, text="", text_color="#E0E0E0", font=("나눔바른고딕", font_info["end_label"]), height=30)
 
         # 노란색 버튼 (모르겠어요)
         self.unknown_button = ctk.CTkButton(self.meaning_frame, text="모르겠어요", fg_color="darkgoldenrod", hover_color="gold",
@@ -368,7 +384,7 @@ class FlashcardApp(ctk.CTk):
 
     # '단어 화면' 구성
     def setup_word_frame(self):
-        self.word_label = ctk.CTkLabel(self.word_frame, text="", font=("Arial", kanji_font_size), text_color="white")
+        self.word_label = ctk.CTkLabel(self.word_frame, text="", font=("Arial", font_info["kanji_font_size"]), text_color="white")
         self.word_label.place(relx=0.5, rely=0.5, anchor="center")
 
     # '뜻 화면' 표시
@@ -454,9 +470,8 @@ class FlashcardApp(ctk.CTk):
 
     def search_radical(self, event=None):
         url = f"https://ja.dict.naver.com/#/search?query={self.p_label.cget("text")}"
-        chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Chrome 경로
-        webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
-
+        webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(get_chrome_path()))
+        webbrowser.get('chrome').open(url)
         
     def search(self, target=None, word=None, event=None):
 
@@ -477,6 +492,24 @@ class FlashcardApp(ctk.CTk):
             elif target == 3 : #GPT 질문 복사
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
                 pyperclip.copy(f"{target}가 어떤 부속 한자로 이루어져있는지 알려줘. 부속 한자의 뜻, 역할, 암시, 그리고 이 부속한자들의 전체적인 의미에 대해서 알려줘.")
+            elif target == 4 : 
+                target = self.word_label.cget("text")[self.search_keys.index(word)]
+                url = self.open_kanji_detail_by_unicoded_word(f"{format(ord(target), '04X')}")
+
+                parts = self.extract_kousei_parts(url)
+                for part_idx in range(len(parts)):
+                    parts[part_idx] = f"{parts[part_idx]}{target}"
+                self.open_txt_on_vscode(parts)
+            elif target == 5 : 
+                kanji = self.word_label.cget("text")[self.search_keys.index(word)]
+                
+                targets = self.m_label.cget("text").split("·")
+                target_list = []
+
+                for target in targets :
+                    target_list.append(f"{kanji} {target}")
+                    
+                self.open_txt_on_vscode(target_list)
 
             elif target == 4 : 
                 target = self.word_label.cget("text")[self.search_keys.index(word)]
@@ -527,8 +560,10 @@ class FlashcardApp(ctk.CTk):
 
             if not target in [11,12,13] :
                 url = f"https://ja.dict.naver.com/#/search?query={target}"
-                chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Chrome 경로
-                webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
+                
+                webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(get_chrome_path()))
+                webbrowser.get('chrome').open(url)
+
             else : 
                 if target == 11 : 
                     target = self.word_label.cget("text")
@@ -575,13 +610,15 @@ class FlashcardApp(ctk.CTk):
             ctypes.windll.user32.keybd_event(0x14, 0, 2, 0)  # Caps Lock 키 뗌
             
     def naver_dictionary_open(self=None, target="") :
+
+        
         url = f"https://ja.dict.naver.com/#/search?query={target}"
-        chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Chrome 경로
-        webbrowser.get(chrome_path).open(url)  # Chrome으로 링크 열기
+        
+        webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(get_chrome_path()))
+        webbrowser.get('chrome').open(url)
         
 # 앱 실행
 if __name__ == "__main__":
     app = FlashcardApp()
     app.mainloop()
-
 
