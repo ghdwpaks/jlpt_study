@@ -5,9 +5,8 @@ import customtkinter as ctk
 import tkinter as tk
 import tkinter.messagebox
 import webbrowser
-from get_chrome_path import get_chrome_path
 from one import FlashcardApp as capp
-import one
+import tool
 from tkinter import filedialog
 
 class CsvRowEditorApp(ctk.CTk):
@@ -23,7 +22,7 @@ class CsvRowEditorApp(ctk.CTk):
         self.csv_file_path = None
 
         # 파일 열기 버튼 (초기 화면)
-        self.open_btn = ctk.CTkButton(self, text="CSV 파일 열기", command=self.open_csv)
+        self.open_btn = ctk.CTkButton(self, text="CSV 파일 열기", command=tool.open_csv(self=self))
         self.open_btn.pack(pady=32)
 
         # 나머지 위젯(Entry 등)은 일단 None으로
@@ -35,27 +34,6 @@ class CsvRowEditorApp(ctk.CTk):
         self.next_btn = None
         self.save_all_btn = None
 
-    def open_csv(self):
-        # 파일 선택 다이얼로그
-        file_path = filedialog.askopenfilename(
-            title="CSV 파일 선택",
-            filetypes=[("CSV Files", "*.csv"), ("All Files", "*.*")]
-        )
-        if not file_path:
-            tk.messagebox.showwarning("파일 선택", "CSV 파일을 선택해야 합니다.")
-            return
-        self.csv_file_path = file_path
-        self.data = one.read_and_process_csv(file_path=self.csv_file_path)
-        if self.data:
-            self.fieldnames = list(self.data[0].keys())
-        else:
-            tk.messagebox.showerror("오류", "CSV 파일을 읽을 수 없습니다.")
-            return
-
-        # 파일 열기 버튼 비활성화 및 숨김
-        self.open_btn.configure(state="disabled")
-        self.open_btn.pack_forget()
-        self.show_editor()
 
     def show_editor(self):
         # 행 번호 표시
@@ -111,7 +89,7 @@ class CsvRowEditorApp(ctk.CTk):
         if event.char == '1':
             t_value = self.data[self.cur_idx].get('T', None)
             url = f"https://ja.dict.naver.com/#/search?query={t_value}"
-            webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(get_chrome_path()))
+            webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(tool.get_chrome_path()))
             webbrowser.get('chrome').open(url)
 
     def show_row(self):
