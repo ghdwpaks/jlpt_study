@@ -1,64 +1,467 @@
 {
-  "task_version": 164,
-  "source_file_csv_path": "z_out175734_1_20.csv",
+  "task_version": 92,
+  "source_file_csv_path": "z_out175734_21_41.csv",
   "ignored_id_list": [
-    7,
-    9,
-    1,
-    12,
+    8,
+    11,
     16,
-    19,
+    7,
+    17,
+    20,
+    6,
     3,
-    14
+    12,
+    1
   ],
   "data_id_list": [
-    [],
     [
+      14,
       18,
+      19,
+      5,
+      2,
+      13,
+      21,
+      4,
+      9,
+      15,
       10
+    ],
+    [
+      13,
+      14,
+      19,
+      9,
+      21,
+      18,
+      10,
+      5,
+      4,
+      2,
+      15
     ]
   ],
   "data": [
-    [],
     [
       {
-        "idx": 18,
-        "sentence": "彼はいつも明るい笑顔で話す。",
-        "reading": "かれは / いつも / あかるい / えがおで / はなす。",
-        "meaning": "그는 항상 밝은 미소로 이야기한다.",
-        "main_word": "会話体",
+        "idx": 14,
+        "sentence": "補完を行うために、データを分析する必要があります。",
+        "reading": "ほ / かん / を / おこなう / ため / に、/ で / ー / た / を / ぶんせき / する / ひつよう / が / あります。",
+        "meaning": "データを分析する必要があります。",
+        "main_word": "補完",
         "words_info": [
           {
-            "word": "笑顔",
-            "word_reading": "えがお",
-            "word_meaning": "미소"
+            "word": "分析",
+            "word_reading": "ぶんせき",
+            "word_meaning": "분석"
+          },
+          {
+            "word": "必要",
+            "word_reading": "ひつよう",
+            "word_meaning": "필요"
           }
         ],
-        "main_word_reading": "かいわたい",
-        "main_word_meaning": "회화체",
+        "main_word_reading": "ほかん",
+        "main_word_meaning": "보완",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 18,
+        "sentence": "私の学習量は毎日増えています。",
+        "reading": "わたし / の / がくしゅうりょう / は / まいにち / ふえて / います。",
+        "meaning": "My learning amount is increasing every day",
+        "main_word": "学習量",
+        "words_info": [
+          {
+            "word": "毎日増",
+            "word_reading": "まいにち",
+            "word_meaning": "매일증가"
+          }
+        ],
+        "main_word_reading": "がくしゅうりょう",
+        "main_word_meaning": "학습량",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 19,
+        "sentence": "彼は長年にわたり知識を蓄積してきた。",
+        "reading": "かれは / ながねんにわたり / ちしきを / ちくせきしてきた。",
+        "meaning": "彼は長年にわたり知識を蓄積してきた。",
+        "main_word": "蓄積",
+        "words_info": [
+          {
+            "word": "長年",
+            "word_reading": "nenn",
+            "word_meaning": "장년"
+          },
+          {
+            "word": "知識",
+            "word_reading": "ちしき",
+            "word_meaning": "지식"
+          }
+        ],
+        "main_word_reading": "ちくせき",
+        "main_word_meaning": "축적",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 5,
+        "sentence": "彼は推測力が高く、誰かの気持ちをすぐに理解することができる。",
+        "reading": "かれは / すいそくりょくが / たかく、 / だれかの / きもちを / すぐに / りかいすることが / できる。",
+        "meaning": "그는 추측력이 높아, 누군가의 마음을 금방 이해할 수 있다",
+        "main_word": "推測力",
+        "words_info": [
+          {
+            "word": "気持",
+            "word_reading": "きもち",
+            "word_meaning": "감정"
+          },
+          {
+            "word": "理解",
+            "word_reading": "",
+            "word_meaning": "이해"
+          }
+        ],
+        "main_word_reading": "すいそくりょく",
+        "main_word_meaning": "추측력",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 2,
+        "sentence": "日本語勉強を始めたばかりですが、とても楽しいです。",
+        "reading": "にほんご / べんきょう / を / はじめた / ばかり / ですが、/ とても / たのしい / です。",
+        "meaning": "私は日本語の勉強を始めたばかりですが、とても楽しいです。",
+        "main_word": "日本語勉強",
+        "words_info": [],
+        "main_word_reading": "にほんごべんきょう",
+        "main_word_meaning": "일본어 공부",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 13,
+        "sentence": "彼の詩は非常に文学的で、人々の心に深く響く。",
+        "reading": "かれの / しは / ひじょうに / ぶんがくてきで、 / ひとびとの / こころに / ふかく /ひびく。",
+        "meaning": "그의 시는 매우 문학적이며, 사람들의 마음에 깊이 울린다",
+        "main_word": "文学的",
+        "words_info": [
+          {
+            "word": "非常",
+            "word_reading": "ひじょう",
+            "word_meaning": "매우"
+          }
+        ],
+        "main_word_reading": "ぶんがくてき",
+        "main_word_meaning": "문학적",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 21,
+        "sentence": "毎日運動することは健康に良いです。",
+        "reading": "まいにち / うんどうすること / は / けんこうに / よいです。",
+        "meaning": "매일 운동하는 것은 건강에 좋다",
+        "main_word": "毎日",
+        "words_info": [
+          {
+            "word": "毎日運動",
+            "word_reading": "毎日",
+            "word_meaning": "매일운동"
+          },
+          {
+            "word": "健康",
+            "word_reading": "けんこう",
+            "word_meaning": "건강"
+          }
+        ],
+        "main_word_reading": "まいにち",
+        "main_word_meaning": "매일",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 4,
+        "sentence": "質問があります。",
+        "reading": "しつもん / があります。",
+        "meaning": "해당 문장을 해석해줘",
+        "main_word": "質問",
+        "words_info": [],
+        "main_word_reading": "しつもん",
+        "main_word_meaning": "질문",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 9,
+        "sentence": "対話を通じて、お互いの理解を深めることが大切です。",
+        "reading": "たいわ / を / つうじて、/ おたがい / の / りかい / を / ふかめる / こと / が / たいせつ / です。",
+        "meaning": "対話を通じて、お互いの理解を深めることが大切です。",
+        "main_word": "対話",
+        "words_info": [
+          {
+            "word": "理解",
+            "word_reading": "りかい",
+            "word_meaning": "이해"
+          },
+          {
+            "word": "大切",
+            "word_reading": "たいせつ",
+            "word_meaning": "소중"
+          }
+        ],
+        "main_word_reading": "たいわ",
+        "main_word_meaning": "대화",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 15,
+        "sentence": "この提案は妥当だと思います。",
+        "reading": "この / 提案 / は / 妥当 / だと / 思います。",
+        "meaning": "この提案は妥当だと思います。",
+        "main_word": "妥当",
+        "words_info": [
+          {
+            "word": "提案",
+            "word_reading": "ていあん",
+            "word_meaning": "제안"
+          }
+        ],
+        "main_word_reading": "だとう",
+        "main_word_meaning": "적절",
         "is_good": true,
         "contacted": false
       },
       {
         "idx": 10,
-        "sentence": "僕の趣味は映画の分類だ。",
-        "reading": "ぼくの / しゅみは / えいがの / ぶんるいだ。",
-        "meaning": "내 취미는 영화 분류다.",
-        "main_word": "分類",
+        "is_good": false
+      }
+    ],
+    [
+      {
+        "idx": 13,
+        "sentence": "文学的な表現は、感情を豊かに伝える手段です。",
+        "reading": "ぶんがくてき / な / ひょうげん / は、/ かんじょう / を / ゆたか / に / つたえる / しゅだん / です。",
+        "meaning": "文学的な表現は、感情を豊かに伝える手段です。",
+        "main_word": "文学的",
         "words_info": [
           {
-            "word": "趣味",
-            "word_reading": "しゅみ",
-            "word_meaning": "취미"
+            "word": "表現",
+            "word_reading": "ひょうげん",
+            "word_meaning": "표현"
           },
           {
-            "word": "映画",
-            "word_reading": "えいが",
-            "word_meaning": "영화"
+            "word": "感情",
+            "word_reading": "かんじょう",
+            "word_meaning": "감정"
+          },
+          {
+            "word": "手段",
+            "word_reading": "しゅだん",
+            "word_meaning": "수단"
           }
         ],
-        "main_word_reading": "ぶんるい",
-        "main_word_meaning": "분류",
+        "main_word_reading": "ぶんがくてき",
+        "main_word_meaning": "문학적",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 14,
+        "sentence": "この論文では、データの補完について詳しく説明されている。",
+        "reading": "この / ろんぶん / でわ、データ / の / ほかん / について / くわしく / せつめい / されている。",
+        "meaning": "この論文では、データの補完について詳しく説明されている。",
+        "main_word": "補完",
+        "words_info": [
+          {
+            "word": "論文",
+            "word_reading": "nonnbun",
+            "word_meaning": "논문"
+          },
+          {
+            "word": "説明",
+            "word_reading": "せつめい",
+            "word_meaning": "설명"
+          }
+        ],
+        "main_word_reading": "ほかん",
+        "main_word_meaning": "보완",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 19,
+        "sentence": "データを蓄積することで、より良い分析が可能になります。",
+        "reading": "でーた / を / ちくせき / する / こと / で、/ より / よい / ぶんせき / が / かのう / に / なります。",
+        "meaning": "데이터를 축적함으로써 더 나은 분석이 가능해집니다",
+        "main_word": "蓄積",
+        "words_info": [
+          {
+            "word": "分析",
+            "word_reading": "ぶんせき",
+            "word_meaning": "분석"
+          },
+          {
+            "word": "可能",
+            "word_reading": "かのう",
+            "word_meaning": "가능"
+          }
+        ],
+        "main_word_reading": "ちくせき",
+        "main_word_meaning": "축적",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 9,
+        "sentence": "対話を通じて、お互いの理解を深めることが大切です。",
+        "reading": "たいわ / を / つうじて、 / おたがい / の / りかい / を / ふかめる / こと / が / たいせつ / です。",
+        "meaning": "対話を通じて、お互いの理解を深めることが大切です。",
+        "main_word": "対話",
+        "words_info": [
+          {
+            "word": "理解",
+            "word_reading": "りかい",
+            "word_meaning": "이해"
+          },
+          {
+            "word": "大切",
+            "word_reading": "たいせつ",
+            "word_meaning": "소중"
+          }
+        ],
+        "main_word_reading": "たいわ",
+        "main_word_meaning": "대화",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 21,
+        "sentence": "毎日運動をすることが健康に良いです。",
+        "reading": "まいにち / うんどう / を / する / こと / が / けんこう / に / よいです。",
+        "meaning": "매일 운동을 하는 것은 건강에 좋습니다",
+        "main_word": "毎日",
+        "words_info": [
+          {
+            "word": "毎日運動",
+            "word_reading": "毎日",
+            "word_meaning": "매일운동"
+          },
+          {
+            "word": "健康",
+            "word_reading": "けんこう",
+            "word_meaning": "건강"
+          }
+        ],
+        "main_word_reading": "まいにち",
+        "main_word_meaning": "매일",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 18,
+        "sentence": "私は毎日学習量を増やすために勉強しています。",
+        "reading": "わたしは / まいにち / がくしゅうりょう / を / ふやすために / べんきょうしています。",
+        "meaning": "私は毎日学習量を増やすために勉強しています。",
+        "main_word": "学習量",
+        "words_info": [
+          {
+            "word": "毎日学習量",
+            "word_reading": "まいにち",
+            "word_meaning": "학습량"
+          },
+          {
+            "word": "勉強",
+            "word_reading": "べんきょう",
+            "word_meaning": "공부"
+          }
+        ],
+        "main_word_reading": "がくしゅうりょう",
+        "main_word_meaning": "학습량",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 10,
+        "sentence": "「この表現例を参考にして、自分の文章を作ってみてください。」",
+        "reading": "この / 表現 / 例を / 参考にして、 / 自分の / 文章を / 作ってみて / ください。",
+        "meaning": "この表現例を参考にして、自分の文章を作ってみてください。",
+        "main_word": "表現例",
+        "words_info": [
+          {
+            "word": "参考",
+            "word_reading": "さんこう",
+            "word_meaning": "참조"
+          },
+          {
+            "word": "自分",
+            "word_reading": "じぶん",
+            "word_meaning": "자신"
+          },
+          {
+            "word": "文章",
+            "word_reading": "ぶんしょう",
+            "word_meaning": "글"
+          }
+        ],
+        "main_word_reading": "ひょうげんれい",
+        "main_word_meaning": "표현예",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 5,
+        "is_good": false
+      },
+      {
+        "idx": 4,
+        "sentence": "質問がありますか？",
+        "reading": "しつもん / があります / か？",
+        "meaning": "질문이 있습니까?",
+        "main_word": "質問",
+        "words_info": [],
+        "main_word_reading": "しつもん",
+        "main_word_meaning": "질문",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 2,
+        "sentence": "私は毎日日本語勉強をしています。",
+        "reading": "わたし / は / まいにち / にほんご / べんきょう / を / しています。",
+        "meaning": "I study Japanese every day",
+        "main_word": "日本語勉強",
+        "words_info": [
+          {
+            "word": "毎日日本語勉強",
+            "word_reading": "まいにち",
+            "word_meaning": "매일"
+          }
+        ],
+        "main_word_reading": "にほんごべんきょう",
+        "main_word_meaning": "일본어 공부",
+        "is_good": true,
+        "contacted": false
+      },
+      {
+        "idx": 15,
+        "sentence": "この提案は妥当だと思います。",
+        "reading": "この / 提案は / 妥当だと / 思います。",
+        "meaning": "この提案は妥当だと思います。",
+        "main_word": "妥当",
+        "words_info": [
+          {
+            "word": "提案",
+            "word_reading": "ていあん",
+            "word_meaning": "제안"
+          }
+        ],
+        "main_word_reading": "だとう",
+        "main_word_meaning": "적절",
         "is_good": true,
         "contacted": false
       }

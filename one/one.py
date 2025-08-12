@@ -1,4 +1,4 @@
-csv_file_path = "z_out175734_21_41.csv"
+csv_file_path = "z_out175734_40_61.csv"
 
 #Caps Lock 주의!!!
 
@@ -45,7 +45,7 @@ import tempfile
 import os
 import subprocess
 
-font_size = 64#32,64
+font_size = 64#32,64,128
 font_info = {
     "title_label":20,
     "info_label":14,
@@ -56,7 +56,7 @@ font_info = {
     "m_label":font_size,
     "km_label":font_size,
     "end_label":font_size,
-    "kanji_font_size":360,#360,240
+    "kanji_font_size":360,#360,240,480
 }
 
 
@@ -93,8 +93,8 @@ single_kanji_data = [{'k': '評論文', 'km': '평론', 'p': '', 's': 'ひょう
 
 
 
-test_data = read_and_process_csv(csv_file_path)
 test_data = single_kanji_data
+test_data = read_and_process_csv(csv_file_path)
 
 
 # CustomTkinter 테마 설정

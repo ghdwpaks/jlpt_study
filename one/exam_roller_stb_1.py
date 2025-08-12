@@ -1,5 +1,6 @@
-from __future__ import annotations
 SOURCE_FILE_CSV_PATH = "z_out175734_21_41.csv"
+
+
 
 import os
 import re
@@ -27,106 +28,6 @@ import ctypes
 import sys
 
 
-# ===== 1) DiversitySamplerSync 추가 (임포트 아래 아무 곳) =====
-import math
-from difflib import SequenceMatcher
-from collections import defaultdict, Counter
-
-import os, random, time
-from dataclasses import dataclass
-from typing import Optional, Protocol
-
-class DiversitySamplerSync:
-    """
-    프롬프트/도메인 독립. 후보 다중 생성 + MMR 선택 + 키별 메모리.
-    동기(OpenAI sync)로 동작해서 현재 스레드 구조에 바로 맞물림.
-    """
-    def __init__(self, api_key: str, model: str = "gpt-4o-mini"):
-        from openai import OpenAI
-        self.OpenAI = OpenAI
-        self.client = self.OpenAI(api_key=api_key)
-        self.model = model
-        self.memory = defaultdict(list)  # key -> 최근 채택 결과들
-
-        # 샘플링 공간(가벼운 가변화를 통해 시드 분산)
-        self.t_low, self.t_high = 0.75, 1.05
-        self.pp_low, self.pp_high = 0.3, 0.8
-        self.fp_low, self.fp_high = 0.5, 0.9
-        self.top_p = 1.0
-        self.max_tokens = 128
-        self.candidates = 4     # 후보 m개 생성
-        self.mmr_alpha = 0.65   # 품질:다양성 가중
-        self.ngram_n = 3
-        self.memory_size = 64
-
-    def _score_quality(self, s: str) -> float:
-        L = len(s)
-        if L < 8: return 0.2
-        if L > 120: return 0.4
-        q = 0.6 + (0.2 if s.endswith(("。",".","!","?")) else 0.0)
-        punct = sum(1 for ch in s if ch in "\"'`[]{}()")
-        q -= min(0.3, punct * 0.03)
-        return max(0.0, min(1.0, q))
-
-    def _ngram_counts(self, s: str, n: int) -> Counter:
-        s = s.strip()
-        return Counter([s[i:i+n] for i in range(max(0, len(s)-n+1))])
-
-    def _overlap_ratio(self, a: str, b: str, n: int) -> float:
-        ca, cb = self._ngram_counts(a, n), self._ngram_counts(b, n)
-        if not ca or not cb: return 0.0
-        inter = sum((ca & cb).values())
-        denom = min(sum(ca.values()), sum(cb.values()))
-        return inter/denom if denom else 0.0
-
-    def _mem_penalty(self, key: str, text: str) -> float:
-        hist = self.memory.get(key, [])[-self.memory_size:]
-        if not hist: return 0.0
-        ng = [self._overlap_ratio(text, h, self.ngram_n) for h in hist]
-        sim = [SequenceMatcher(None, text, h).ratio() for h in hist]
-        return (sum(ng)/len(ng))*0.6 + (sum(sim)/len(sim))*0.4
-
-    def _one_candidate(self, system: str, user: str) -> str:
-        import random, time
-        # 마이크로 지터: 병렬 동시 도달 분산
-        time.sleep(random.uniform(0.008, 0.04))
-        t  = random.uniform(self.t_low,  self.t_high)
-        pp = random.uniform(self.pp_low, self.pp_high)
-        fp = random.uniform(self.fp_low, self.fp_high)
-        resp = self.client.chat.completions.create(
-            model=self.model,
-            messages=[{"role":"system","content":system},
-                      {"role":"user","content":user}],
-            temperature=t, top_p=self.top_p,
-            presence_penalty=pp, frequency_penalty=fp,
-            max_tokens=self.max_tokens,
-        )
-        return (resp.choices[0].message.content or "").strip()
-
-    def generate(self, *, key: str, system: str, user: str) -> str:
-        # 1) 후보 생성
-        cands = [self._one_candidate(system, user) for _ in range(self.candidates)]
-
-        # 2) 점수(품질/중복) → MMR 선택
-        alpha = self.mmr_alpha
-        best_i, best_score = 0, -1e9
-        for i, c in enumerate(cands):
-            q = self._score_quality(c)
-            with_others = 0.0
-            if len(cands) > 1:
-                sims = [SequenceMatcher(None, c, o).ratio() for j,o in enumerate(cands) if j != i]
-                with_others = sum(sims)/len(sims)
-            red = 0.6*self._mem_penalty(key, c) + 0.4*with_others
-            score = alpha*q - (1-alpha)*red
-            if score > best_score:
-                best_score, best_i = score, i
-        chosen = cands[best_i]
-
-        # 3) 메모리 업데이트
-        self.memory[key].append(chosen)
-        if len(self.memory[key]) > self.memory_size:
-            self.memory[key] = self.memory[key][-self.memory_size:]
-        return chosen
 
 
 def run_setting_in_new_cmd():
@@ -163,7 +64,7 @@ class SourceSetter :
         self.api_key = os.getenv("OPENAI_API_KEY")
         if not self.api_key:
             raise RuntimeError("OPENAI_API_KEY 환경변수가 없습니다.")
-        self.diversity = DiversitySamplerSync(api_key=self.api_key, model="gpt-4o-mini")
+
 
         # 전역 변수: 스레드별 결과 저장
 
@@ -254,30 +155,43 @@ class SourceSetter :
             print("clean_up e :",e)
             return None
 
-    # --- exam_roller.py : ask_gpt()만 교체 ---------------------------------
-    def ask_gpt(self, question: str) -> str:
-        try:
-            # 병렬 시 동일시드/경로 수렴을 약간 분산
-            time.sleep(random.uniform(0.01, 0.08))
-
+    def ask_gpt(self,question: str) -> str:
+        try : 
             messages = [
-                {"role": "system",
-                "content": "Follow the instruction exactly. Output only what is requested. No explanations."},
+                {"role": "system", "content": ""},
                 {"role": "user", "content": question}
             ]
             import openai
             response = openai.OpenAI(api_key=self.api_key).chat.completions.create(
                 model="gpt-4o-mini",
                 messages=messages,
-                temperature=0.85,       # 약간만 가열
-                top_p=1.0,
-                presence_penalty=0.5,   # 새 토큰 출현 유도
-                frequency_penalty=0.7,  # 반복 억제
-                max_tokens=128,
+                temperature=0.9
             )
+
+該当,해당,がいとう
+感情,감정,かんじょう
+説明的,설명적,せつめいてき
+抽象的,추상적,ちゅうしょうてき
+補完的,보완적,ほかんてき
+練習,연습,れんしゅう
+推測,추측,すいそく
+提案,제안,ていあん
+予定,예정,よてい
+今感,요즘(속어),いまかん
+可能,가능,かのう
+中間,중간,ちゅうかん
+知識,지식,ちしき
+実体経済,실물경제,じったいけいざい
+学習,학습,がくしゅう
+理解力,이해력,りかいりょく
+施策,시책,しさく
+長文,장문,ちょうぶん
+専門的,전문적,せんもんてき
+            print("messages :",messages," /// response.choices[0].message.content :",response.choices[0].message.content)
+            print("response :",response)
             return self.clean_up(response.choices[0].message.content)
         except Exception as e:
-            print("ask_gpt e :", e)
+            print("ask_gpt e :",e)
             return None
 
     def get_kanji_words(self,sentence: str) -> str :
@@ -287,43 +201,45 @@ class SourceSetter :
             print("return_sentence_prompt e :",e)
             return None
         
-    def create_answer(self, result_data, status, request_type, word_or_sen):
-        try:
+    def create_answer(self,result_data,status,request_type,word_or_sen) :
+        try : 
             create_func = None
+            check_func = None
 
-            if request_type == "create_sentence":
-                create_func = self.s("create_sentence", word_or_sen)
-            elif request_type == "create_reading":
-                create_func = self.s("create_reading", word_or_sen)
-            elif request_type == "create_meaning":
-                create_func = self.s("create_meaning", word_or_sen)
+            if request_type == "create_sentence" : 
+                create_func = self.s("create_sentence",word_or_sen)
+            elif request_type == "create_reading" : 
+                create_func = self.s("create_reading",word_or_sen)
+            elif request_type == "create_meaning" : 
+                create_func = self.s("create_meaning",word_or_sen)
 
             for _ in range(5):
-                answer = self.diversity.generate(
-                    key=word_or_sen,
-                    system="Follow the instruction exactly. Output only what is requested. No explanations.",
-                    user=create_func
-                )
-                    #answer = self.ask_gpt(create_func)
+                answer = self.ask_gpt(create_func)
 
                 result_data[request_type.replace("create_", "", 1)] = answer
+
+                request_type.replace("create_", "", 1)
+
                 check_sentence = self.s(
-                    request_type.replace("create_", "check_", 1),
-                    word_or_sen, answer
-                )
+                        request_type.replace("create_", "check_", 1),
+                        word_or_sen,
+                        answer
+                    )
+                
                 if self.ask_gpt(check_sentence) == "y":
                     status["is_good"] = True
                     return
-                else:
+                else  : 
                     status["is_good"] = False
             return
+                
         except Exception as e:
-            print("create_answer e :", e)
+            print("create_answer e :",e)
             return None
         
         
             
-    '''
+
     def s(self,question_type,part1,part2=None):
         questions = {
             "create_sentence":f"[{part1}]라는 단어를 포함시켜서 일본어 예문 하나를 작성해줘. 너의 대답을 그대로 사용자에게 보여줄테니까, 모든 부가요소들은 제거하고서, 그 문장만을 반환해줘.",
@@ -336,44 +252,12 @@ class SourceSetter :
             "word_meaning":f"{part1} 의 한국어 뜻을 한 단어로 알려줘. 답변에는 오직 뜻만 포함하고, 부가 설명이나 다른 내용은 절대 포함하지 마."
         }
         try : 
+            print("s questions[question_type] :",questions[question_type])
             return questions[question_type]
         except Exception as e:
             print("s e :",e)
             return None
-    '''
         
-
-    def s(self, question_type, part1, part2=None):
-        # 상투문장 몇 개만 간단히 금지(필요시 추가)
-        if question_type == "create_sentence":
-            # 문체/시점/길이 힌트를 아주 가볍게 넣어 초반 토큰 분기 확대
-            style = random.choice(["会話体", "丁寧体", "カジュアル", "フォーマル", "独白"])
-            voice = random.choice(["一人称", "三人称"])
-            #length = random.choice(["13~18字", "18~24字", "24~32字"])
-            length = "13~18字"
-            # 작은 논스는 모델 출력에 보이지 않지만(문장 외 금지했으므로) 내부 분기만 유도하는 힌트
-            nonce = str(random.randint(1000, 9999))
-            return (
-                f"[diversity:{nonce}] 「{part1}」を必ず含めて、日本語の自然な例文を1文だけ作成。"
-                f"文体:{style}、視点:{voice}、長さ:{length}。句点で終了。"
-                "出力はその文のみ。説明・翻訳・引用符は禁止。"
-            )
-
-        questions = {
-            "create_reading": f"[{part1}]해당 문장을 읽는 방법을 히라가나로 알려줘. 끊어읽어야하는 부분마다 ' / ' 을 삽입해줘. "
-                            "너의 대답을 그대로 사용자에게 보여줄테니까, 모든 부가요소들은 제거하고서, 그 문장만을 반환해줘.",
-            "check_reading":  f"[{part1}]이 문장을 읽는 방법이 [{part2}] 라는 주장이 정상적인지 아닌지 y 와 n 로 대답해줘. "
-                            "너의 대답을 그대로 사용자에게 보여줄테니까, 모든 부가요소들은 제거하고서, y 또는 n 만 반환해줘.",
-            "create_meaning": f"[{part1}]해당 문장을 한국어 해석해줘. 너의 대답을 그대로 사용자에게 보여줄테니까, 모든 부가요소들은 제거하고서, 그 문장만을 반환해줘.",
-            "check_meaning":  f"[{part1}]이 문장의 뜻이 [{part2}] 라는 주장이 정상적인지 아닌지 y 와 n 로 대답해줘. "
-                            "너의 대답을 그대로 사용자에게 보여줄테니까, 모든 부가요소들은 제거하고서, y 또는 n 만 반환해줘.",
-            "check_word_reading": f"{part1}를 읽는 방법이 {part2}가 맞아? 맞으면 'y'만, 틀리면 올바른 발음만 정확히 알려줘. "
-                                "답변에 다른 부가 설명이나 내용은 절대 포함하지 말고, 오직 한 가지만 반환해.",
-            "check_sentence": f"[{part1}]해당 문장이 정상적인지 아닌지 y 와 n 로 대답해줘. "
-                            "너의 대답을 그대로 사용자에게 보여줄테니까, 모든 부가요소들은 제거하고서, y 또는 n 만 반환해줘.",
-            "word_meaning":   f"{part1} 의 한국어 뜻을 한 단어로 알려줘. 답변에는 오직 뜻만 포함하고, 부가 설명이나 다른 내용은 절대 포함하지 마."
-        }
-        return questions[question_type]
 
     def remove_brackets(self,text):
         try : 
@@ -1006,7 +890,7 @@ class ExamRoller :
             os.system('cls')
 
             #print_line
-            if self.target_item and self.target_item["is_good"] == True : 
+            if self.target_item["is_good"] == True : 
                 self.print_line(self.target_item["sentence"])
 
             return False
@@ -1040,11 +924,11 @@ class ExamRoller :
                 while msvcrt.kbhit():
                     last_key = msvcrt.getwch()
 
-                if last_key == 'a':
+                if last_key == "a":
                     if self.main_data:
                         if self.main_checkout() : break
                         
-                elif last_key == "d" :
+                elif last_key == 'd' :
                     if self.main_data:
                         if self.target_index :
                             self.append_ignore()
@@ -1054,29 +938,28 @@ class ExamRoller :
                     
                     if self.printed_info : 
                         #이미 보이고있는중
-                        if self.target_item : 
-                            os.system('cls')
-                            self.print_line(self.target_item["sentence"])
-                            
-                            self.printed_info = False
+                        
+                        os.system('cls')
+                        self.print_line(self.target_item["sentence"])
+                        
+                        self.printed_info = False
                     elif not self.printed_info : 
                         #보이고있지 않는 상태
                         print()
-                        if self.target_item : 
-                            if self.target_item["is_good"] == True : 
+                        if self.target_item["is_good"] == True : 
 
-                                self.print_line(self.target_item["reading"])
-                                self.print_line(self.target_item["meaning"])
-                                print()
-                                print(f'{self.target_item["main_word"]} / {self.target_item["main_word_reading"]} / {self.target_item["main_word_meaning"]}')
-                                for word_info in self.target_item["words_info"] :
-                                    self.print_line(
-                                        self.link(
-                                                f"{word_info["word"]} / {word_info["word_reading"]} / {word_info["word_meaning"]}",
-                                                word_info["word"]
-                                            )
+                            self.print_line(self.target_item["reading"])
+                            self.print_line(self.target_item["meaning"])
+                            print()
+                            print(f'{self.target_item["main_word"]} / {self.target_item["main_word_reading"]} / {self.target_item["main_word_meaning"]}')
+                            for word_info in self.target_item["words_info"] :
+                                self.print_line(
+                                    self.link(
+                                            f"{word_info["word"]} / {word_info["word_reading"]} / {word_info["word_meaning"]}",
+                                            word_info["word"]
                                         )
-                            self.printed_info = True
+                                    )
+                        self.printed_info = True
 
 
 
@@ -1086,6 +969,9 @@ class ExamRoller :
 
             time.sleep(0.01)
         print("Fin.")
+
+
+
 
 
 
