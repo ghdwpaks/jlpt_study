@@ -1,336 +1,215 @@
-# path: test_diversity_layer.py
-from __future__ import annotations
+s = """状態,상태,じょうたい
+訓練,훈련,くんれん
+話題,화제,わだい
+文体,문체,ぶんたい
+構築,구축,こうちく
+単語,단어,たんご
+解決,해결,かいけつ
+中盤,중반,ちゅうばん
+機能,기능,きのう
+排除,배제,はいじょ
+正確,정확,せいかく
+抽象,추상,ちゅうしょう
+最初,최초,さいしょ
+上限,상한,じょうげん
+初級,초급,しょきゅう
+読者,독자,どくしゃ
+説明,설명,せつめい
+意欲,의욕,いよく
+準備,준비,じゅんび
+受容,수용,じゅよう
+概念,개념,がいねん
+問題,문제,もんだい
+今何,지금,いまなん
+無理,무리,むり
+整理,정리,せいり
+方法,방법,ほうほう
+構造,구조,こうぞう
+時限,시한,じげん
+会話,회화,かいわ
+視点,시점,してん
+最近,최근,さいきん
+聴解,청해,ちょうかい
+段階,단계,だんかい
+本気,진심,ほんき
+丁寧,정중,ていねい
+面白,재미있음,おもしろい
+空気,공기,くうき
+一度,한 번,いちど
+記事,기사,きじ
+見出,제목,みだし
+傾向,경향,けいこう
+優先,우선,ゆうせん
+能力,능력,のうりょく
+原因,원인,げんいん
+姿勢,자세,しせい
+一緒,함께,いっしょ
+目指,목표,めざし
+成長,성장,せいちょう
+述語,(서)술어,じゅつご
+記録,기록,きろく
+証拠,증거,しょうこ
+勉強,공부,べんきょう
+本当,진실,ほんとう
+貴重,귀중,きちょう
+情報,정보,じょうほう
+非常,비상,ひじょう
+現在,현재,げんざい
+主語,주어,しゅご
+一方,일방,いっぽう
+結果,결과,けっか
+間違,잘못,まちがい
+景気,경기,けいき
+見方,견해,みかた
+確認,확인,かくにん
+大切,중요한,たいせつ
+直前,직전,ちょくぜん
+経験,경험,けいけん
+目標,목표,もくひょう
+全体,전체,ぜんたい
+語彙,어휘,ごい
+不安,불안,ふあん
+位置,위치,いち
+自分,자신,じぶん
+発展,발전,はってん
+意識,의식,いしき
+試験,시험,しけん
+心配,걱정,しんぱい
+表情,표정,ひょうじょう
+展開,전개,てんかい
+気持,감정,きもち
+自体,자기,じたい
+挑戦,도전,ちょうせん
+単位,단위,たんい
+前後,앞뒤,ぜんご
+目安,기준,めやす
+特徴,특징 특성,とくちょう
+途中,중간,とちゅう
+統一,통일,とういつ
+意味,의미,いみ
+部分,부분,ぶぶん
+過程,과정,かてい
+熱心,열심,ねっしん
+都度,매번,つど
+実際,실제,じっさい
+理解,이해,りかい
+言葉,말,ことば
+相当,상당,そうとう
+一部,일부,いちぶ
+関係,관계,かんけい
+内容,내용,ないよう
+複文,복문,ふくぶん
+有効,유효,ゆうこう
+例文,예문,れいぶん
+行動,행동,こうどう
+修正,수정,しゅうせい
+材料,재료,ざいりょう
+自然,자연,しぜん
+入口,입구,いりぐち
+方向,방향,ほうこう
+文末,문말,ぶんまつ
+自信,자신(감),じしん
+下手,서투름,へた
+見直,재검토,みなおし
+目的,목적,もくてき
+大事,중요,だいじ
+文法,문법,ぶんぽう
+今日,오늘,きょう
+馴染,익숙함,なじみ
+一人,혼자,ひとり
+実感,실감,じっかん
+理由,이유,りゆう
+特別,특별,とくべつ
+一時,일시,いちじ
+負担,부담,ふたん
+十分,충분,じゅうぶん
+重要,중요,じゅうよう
+以外,이외,いがい
+判断,판단,はんだん
+解析,해석,かいせき
+語尾,어미,ごび
+孤独,고독,こどく
+使用,사용,しよう
+文脈,문맥,ぶんみゃく
+語順,어순,ごじゅん
+成立,성립,せいりつ
+模索,모색,もさく
+単純,단순,たんじゅん
+用語,용어,ようご
+以下,이하,いか
+専門的,전문,せんもん
+今見直,재검토,いまみなおし
+方向性,방향성,ほうこうせい
+直接的,직접,ちょくせつ
+概念語,개념어,かいがいねんご
+最近読,최근읽(은),さいきんどく
+本質的,본질,ほんしつ
+接続詞,접속사,せつぞくし
+第一歩,첫걸음,だいいっぽ
+論理的,논리,ろんり
+能動的,능동,のうどう
+読解力,독해력,どっかいりょく
+抽象語,추상어,ちゅうしょうご
+好奇心,호기심,こうきしん
+分析文,분석문,ぶんせきぶん
+丁寧体,존댓말,ていねいたい
+難易度,난이도,なんいど
+教科書,교과서,きょうかしょ
+日本語,일본어,にほんご
+最適化,최적화,さいてきか
+補助的,보조,ほじょ
+大丈夫,괜찮음,だいじょうぶ
+一部含,일부(를)포(함),いちぶふく
+達成感,성취감,たっせいかん
+可能性,가능성,かのうせい
+今日言,오늘,きょうげん
+今日覚,오늘,きょうおぼ
+結局始,결국시(작),けっきょくはじ
+単語覚,단어암(기),たんごおぼ
+文構造,문(장)구조,ぶんこうぞう
+論理性,논리성,ろんりせい
+対話用,대화용,たいわよう
+不明確,불명확,ふめいかく
+関係詞,관계사,かんけいし
+正確性,정확성,せいかくせい
+一番自然,가장자연(스러움),いちばんしぜん
+長文構造,장문구조,ちょうぶんこうぞう
+判断材料,판단재료,はんだんざいりょう
+比較的短,비교적 짧(은),ひかくてきみじか
+焦点語彙,초점어휘(중심어휘),しょうてんごい
+日本語力,일본어능력,にほんごりょく
+一生懸命,열심히,いっしょうけんめい
+論理構造,논리구조,ろんりこうぞう
+文法構造,문법구조,ぶんぽうこうぞう
+最近一人,최근혼자,さいきんひとり
+内容構造,내용구조,ないようこうぞう
+抽象表現,추상표현,ちゅうしょうひょうげん
+一語一語,단어 하나하나,いちごいちご
+日本語学習者,일본어학습자,にほんごがくしゅうしゃ
+論理的接続,논리적 연결,ろんりてきせつぞく"""
 
-import argparse
-import asyncio
-import math
-import os
-import random
-import statistics
-import sys
-import time
-from collections import Counter, defaultdict
-from dataclasses import dataclass
-from difflib import SequenceMatcher
-from typing import List, Dict, Tuple, Optional
+s = s.split("\n")
+for i in range(len(s)) :
+    s[i] = s[i].split(",")
 
+res = []
+for i in s :
+    if len(i[0]) == 2 :
+        res.append(",".join(i))
 
-try:
-    from openai import OpenAI
-except Exception as e:
-    print("OpenAI SDK가 필요합니다. `pip install openai`", file=sys.stderr)
-    raise
+for i in s :
+    if len(i[0]) == 3 :
+        res.append(",".join(i))
 
-# ------------------------ Metrics ------------------------
-
-def pairwise_similarity(texts: List[str]) -> float:
-    if len(texts) < 2:
-        return 0.0
-    sims = []
-    for i in range(len(texts)):
-        for j in range(i + 1, len(texts)):
-            sims.append(SequenceMatcher(None, texts[i], texts[j]).ratio())
-    return float(statistics.mean(sims)) if sims else 0.0
-
-def ngram_diversity(texts: List[str], n: int) -> float:
-    grams: Counter[str] = Counter()
-    total = 0
-    for t in texts:
-        s = t.strip()
-        seq = [s[i:i+n] for i in range(len(s) - n + 1)]
-        grams.update(seq)
-        total += max(0, len(s) - n + 1)
-    return (len(grams) / total) if total else 0.0
-
-def char_entropy(texts: List[str]) -> float:
-    c = Counter("".join(texts))
-    tot = sum(c.values())
-    if tot == 0:
-        return 0.0
-    return -sum((v/tot) * math.log2(v/tot) for v in c.values())
-
-def truncate(s: str, width: int = 120) -> str:
-    s = s.replace("\n", " ")
-    return s if len(s) <= width else s[:width] + "…"
-
-def report(name: str, texts: List[str]) -> None:
-    uniq = len(set(texts))
-    print(f"\n=== {name} ===")
-    print(f"- total: {len(texts)}")
-    print(f"- unique: {uniq}")
-    print(f"- avg_pairwise_similarity: {pairwise_similarity(texts):.3f}  (낮을수록 다양)")
-    print(f"- bigram_diversity: {ngram_diversity(texts, 2):.3f}  (높을수록 다양)")
-    print(f"- trigram_diversity: {ngram_diversity(texts, 3):.3f}  (높을수록 다양)")
-    print(f"- char_entropy: {char_entropy(texts):.3f}")
-    print("- samples:")
-    for i, t in enumerate(texts[:5], 1):
-        print(f"  {i:02d}. {truncate(t)}")
-
-# ------------------------ Baseline Generator ------------------------
-
-@dataclass(frozen=True)
-class Sampling:
-    temperature: float = 0.8
-    top_p: float = 1.0
-    presence_penalty: float = 0.5
-    frequency_penalty: float = 0.7
-    max_tokens: int = 96
-
-class Baseline:
-    def __init__(self, model: str, api_key: Optional[str] = None) -> None:
-        key = api_key or os.getenv("OPENAI_API_KEY")
-        if not key:
-            raise RuntimeError("OPENAI_API_KEY 환경변수가 필요합니다.")
-        self.client = OpenAI(api_key=key)
-        self.model = model
-
-    async def one(self, system: str, user: str, s: Sampling) -> str:
-        # 미세 지터로 병렬 도달 타이밍 분산
-        await asyncio.sleep(random.uniform(0.01, 0.05))
-        resp = await asyncio.to_thread(
-            self.client.chat.completions.create,
-            model=self.model,
-            messages=[{"role":"system","content":system},
-                      {"role":"user","content":user}],
-            temperature=s.temperature,
-            top_p=s.top_p,
-            presence_penalty=s.presence_penalty,
-            frequency_penalty=s.frequency_penalty,
-            max_tokens=s.max_tokens,
-        )
-        return (resp.choices[0].message.content or "").strip()
-
-# ------------------------ Diversity Layer ------------------------
-
-@dataclass
-class SamplingSpace:
-    t_low: float = 0.75
-    t_high: float = 1.10  # was 1.05
-    pp_low: float = 0.3
-    pp_high: float = 0.8
-    fp_low: float = 0.5
-    fp_high: float = 0.9
-    top_p: float = 1.0
-    max_tokens: int = 96
-
-    def sample(self) -> Tuple[float, float, float]:
-        return (
-            random.uniform(self.t_low, self.t_high),
-            random.uniform(self.pp_low, self.pp_high),
-            random.uniform(self.fp_low, self.fp_high),
-        )
-
-class DiversityLayer:
-    """프롬프트 그대로 유지. m개 후보 생성 → MMR로 1개 선택. 키별 메모리로 중복 억제."""
-    def __init__(self, model: str, api_key: Optional[str] = None,
-                 candidates: int = 5, mmr_alpha: float = 0.6,
-                 ngram_n: int = 3, memory_size: int = 128) -> None:
-        self.bigram_hist: Dict[str, Counter[str]] = defaultdict(Counter)  # key -> bigram freq
-        key = api_key or os.getenv("OPENAI_API_KEY")
-        if not key:
-            raise RuntimeError("OPENAI_API_KEY 환경변수가 필요합니다.")
-        self.client = OpenAI(api_key=key)
-        self.model = model
-        self.candidates = candidates
-        self.alpha = mmr_alpha
-        self.ngram_n = ngram_n
-        self.memory_size = memory_size
-        self.memory: Dict[str, List[str]] = defaultdict(list)
-        self.space = SamplingSpace()
-
-    # 3) 보조 함수들 (클래스 안에 추가)
-    def _bigrams(self, s: str) -> List[str]:
-        s = s.strip()
-        return [s[i:i+2] for i in range(max(0, len(s)-1))]
-
-    def _bigram_penalty(self, key: str, text: str) -> float:
-        """
-        최근 메모리에서 자주 등장한 빅램일수록 페널티↑ (범용, 금지어 하드코딩 없음)
-        값 범위 대략 0~1 근처.
-        """
-        hist = self.bigram_hist.get(key, None)
-        if not hist:
-            return 0.0
-        grams = self._bigrams(text)
-        if not grams:
-            return 0.0
-        # 상위 빈도 빅램일수록 더 감점
-        total = 0.0
-        for g in grams:
-            total += hist.get(g, 0)
-        # 정규화: 최근 메모리 크기에 비례해 완만하게
-        denom = sum(hist.values()) or 1
-        return min(1.0, total / denom)
-
-    def _quality(self, s: str) -> float:
-        L = len(s)
-        if L < 8: return 0.2
-        if L > 120: return 0.4
-        q = 0.6 + (0.2 if s.endswith(("。",".","!","?")) else 0.0)
-        punct = sum(1 for ch in s if ch in "\"'`[]{}()")
-        return max(0.0, min(1.0, q - min(0.3, punct * 0.03)))
-
-    def _counts(self, s: str, n: int) -> Counter[str]:
-        s = s.strip()
-        return Counter([s[i:i+n] for i in range(max(0, len(s)-n+1))])
-
-    def _overlap(self, a: str, b: str, n: int) -> float:
-        ca, cb = self._counts(a, n), self._counts(b, n)
-        if not ca or not cb: return 0.0
-        inter = sum((ca & cb).values())
-        denom = min(sum(ca.values()), sum(cb.values()))
-        return inter/denom if denom else 0.0
-
-    def _mem_penalty(self, key: str, text: str) -> float:
-        hist = self.memory.get(key, [])[-self.memory_size:]
-        if not hist: return 0.0
-        ng = [self._overlap(text, h, self.ngram_n) for h in hist]
-        sim = [SequenceMatcher(None, text, h).ratio() for h in hist]
-        return (sum(ng)/len(ng))*0.6 + (sum(sim)/len(sim))*0.4
-
-    async def _one_candidate(self, system: str, user: str) -> str:
-        # 마이크로 지터 + 샘플링 랜덤화
-        await asyncio.sleep(random.uniform(0.008, 0.04))
-        t, pp, fp = self.space.sample()
-        resp = await asyncio.to_thread(
-            self.client.chat.completions.create,
-            model=self.model,
-            messages=[{"role":"system","content":system},
-                      {"role":"user","content":user}],
-            temperature=t, top_p=self.space.top_p,
-            presence_penalty=pp, frequency_penalty=fp,
-            max_tokens=self.space.max_tokens,
-        )
-        return (resp.choices[0].message.content or "").strip()
-
-    async def generate(self, key: str, system: str, user: str) -> str:
-        cands = await asyncio.gather(*[asyncio.create_task(self._one_candidate(system, user))
-                                   for _ in range(self.candidates)])
-        best_i, best_score = 0, -1e9
-        for i, c in enumerate(cands):
-            q = self._quality(c)
-            with_others = 0.0
-            if len(cands) > 1:
-                sims = [SequenceMatcher(None, c, o).ratio() for j, o in enumerate(cands) if j != i]
-                with_others = sum(sims) / len(sims)
-            bg = self._bigram_penalty(key, c)
-            red = 0.55 * self._mem_penalty(key, c) + 0.35 * with_others + 0.10 * bg
-            score = self.alpha * q - (1 - self.alpha) * red
-            if score > best_score:
-                best_score, best_i = score, i
-        chosen = cands[best_i]
-
-        # 🔹 최근 결과와 너무 비슷하면 다른 후보로 교체
-        def too_similar(a: str, b: str, th: float = 0.90) -> bool:
-            return SequenceMatcher(None, a, b).ratio() >= th
-        if any(too_similar(chosen, h) for h in self.memory[key][-8:]):
-            alt_i, alt_score = best_i, -1e9
-            for i, c in enumerate(cands):
-                if i == best_i:
-                    continue
-                q = self._quality(c)
-                red = 0.6 * self._mem_penalty(key, c) + 0.4 * SequenceMatcher(None, c, chosen).ratio()
-                score = self.alpha * q - (1 - self.alpha) * red
-                if score > alt_score:
-                    alt_score, alt_i = score, i
-            chosen = cands[alt_i]
-
-        mem = self.memory[key]
-        mem.append(chosen)
-        if len(mem) > self.memory_size:
-            del mem[: len(mem) - self.memory_size]
-
-            
-        # 빅램 히스토리 업데이트 (최근 텍스트 반영)
-        self.bigram_hist[key].update(self._bigrams(chosen))
-        # 히스토리가 너무 커지지 않게 상위 N개만 유지 (예: 2000개)
-        if sum(self.bigram_hist[key].values()) > 2000:
-            self.bigram_hist[key] = Counter(dict(self.bigram_hist[key].most_common(1500)))
+for i in s :
+    if len(i[0]) == 4 :
+        res.append(",".join(i))
 
 
-        return chosen
+for i in s :
+    if len(i[0]) > 4 :
+        res.append(",".join(i))
 
-# ------------------------ Prompts ------------------------
+for i in res : print(i)
 
-def build_user_prompt(word: str, base_prompt: Optional[str]) -> str:
-    if base_prompt:
-        return base_prompt.replace("{word}", word)
-    # 기본 프롬프트(범용)
-    return (f"日本語で『{word}』を必ず含めた自然な例文を1文だけ生成してください。"
-            f"句点で終え、説明/翻訳/引用符 없이 문장만 출력.")
 
-SYSTEM = "Answer exactly as instructed. Output one sentence only."
-
-# ------------------------ Runners ------------------------
-
-async def run_serial(fn, n: int) -> List[str]:
-    out: List[str] = []
-    for _ in range(n):
-        out.append(await fn())
-    return out
-
-async def run_parallel(fn, n: int, concurrency: int) -> List[str]:
-    sem = asyncio.Semaphore(concurrency)
-    async def task():
-        async with sem:
-            return await fn()
-    return await asyncio.gather(*[asyncio.create_task(task()) for _ in range(n)])
-
-# ------------------------ CLI ------------------------
-
-def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="병렬 다양성 테스트 (Baseline vs Diversity Layer)")
-    p.add_argument("--model", default="gpt-4o-mini")
-    p.add_argument("--word", default="本質")
-    p.add_argument("--prompt", default=None,
-                   help="사용자 프롬프트. {word} 자리표시자 지원. 미지정 시 기본 프롬프트 사용")
-    p.add_argument("--n", type=int, default=20)
-    p.add_argument("--concurrency", type=int, default=10)
-    p.add_argument("--candidates", type=int, default=5)
-    p.add_argument("--mmr_alpha", type=float, default=0.6)
-    return p.parse_args()
-
-async def amain() -> None:
-    args = parse_args()
-    key = os.getenv("OPENAI_API_KEY")
-    if not key:
-        raise RuntimeError("OPENAI_API_KEY 환경변수가 필요합니다.")
-
-    user_prompt = build_user_prompt(args.word, args.prompt)
-
-    base = Baseline(model=args.model, api_key=key)
-    s = Sampling()
-
-    div = DiversityLayer(model=args.model, api_key=key,
-                         candidates=args.candidates, mmr_alpha=args.mmr_alpha)
-
-    # Baseline
-    t0 = time.perf_counter()
-    base_serial = await run_serial(lambda: base.one(SYSTEM, user_prompt, s), args.n)
-    t1 = time.perf_counter()
-    base_parallel = await run_parallel(lambda: base.one(SYSTEM, user_prompt, s), args.n, args.concurrency)
-    t2 = time.perf_counter()
-
-    # Diversity Layer
-    div_serial = await run_serial(lambda: div.generate(key=args.word, system=SYSTEM, user=user_prompt), args.n)
-    t3 = time.perf_counter()
-    div_parallel = await run_parallel(lambda: div.generate(key=args.word, system=SYSTEM, user=user_prompt),
-                                      args.n, args.concurrency)
-    t4 = time.perf_counter()
-
-    print(f"\n[시간] baseline serial: {t1-t0:.2f}s | baseline parallel: {t2-t1:.2f}s | "
-          f"div serial: {t3-t2:.2f}s | div parallel: {t4-t3:.2f}s")
-
-    report("BASELINE — SERIAL", base_serial)
-    report("BASELINE — PARALLEL", base_parallel)
-    report("DIVERSITY — SERIAL", div_serial)
-    report("DIVERSITY — PARALLEL", div_parallel)
-
-def main() -> None:
-    try:
-        asyncio.run(amain())
-    except KeyboardInterrupt:
-        pass
-
-if __name__ == "__main__":
-    main()
